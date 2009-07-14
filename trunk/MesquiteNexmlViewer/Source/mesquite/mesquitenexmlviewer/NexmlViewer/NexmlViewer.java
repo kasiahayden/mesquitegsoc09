@@ -14,6 +14,8 @@ import mesquite.categ.lib.CategoricalState;
 public class NexmlViewer extends DataWindowAssistantI {
 	MesquiteTable table;
 	CharacterData data;
+	
+	TableTool xmlTool;
 
 	int cCurrent;
 	int tCurrent;
@@ -29,6 +31,16 @@ public class NexmlViewer extends DataWindowAssistantI {
 			boolean hiredByName) {
 			addMenuItem("Display NeXML", MesquiteModule.makeCommand(
 					"displayNeXMLTree", this));
+			if (containerOfModule() instanceof MesquiteWindow) {
+				xmlTool = new TableTool(this, "DisplayNeXML", getPath(), "xml.gif", 1,1,"Display NeXML", "Displays NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXMLTree", this), null, null);
+				xmlTool.setWorksOnColumnNames(true);
+				xmlTool.setWorksOnRowNames(true);
+				((MesquiteWindow)containerOfModule()).addTool(xmlTool);
+				xmlTool.setPopUpOwner(this);
+				setUseMenubar(false); //menu available by touching button
+
+			}
+			
 		return true;
 	}
 
