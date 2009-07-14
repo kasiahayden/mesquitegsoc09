@@ -27,8 +27,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition,
 			boolean hiredByName) {
-		addMenuItem("Display NeXML Tree", MesquiteModule.makeCommand(
-				"displayNeXMLTree", this));
+			addMenuItem("Display NeXML", MesquiteModule.makeCommand(
+					"displayNeXMLTree", this));
 		return true;
 	}
 
@@ -138,9 +138,9 @@ public class NexmlViewer extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments,
 			CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Displays NeXML annotations tree",
+		if (checker.compare(this.getClass(), "Displays NeXML annotations",
 				"[name of module]", commandName, "displayNeXMLTree")) {
-			if (table != null && data != null) {
+			if (table != null && data != null && hasURIMapElement() == true) {
 				this.containerOfModule().setAnnotation(getFootnoteAnnotation(),
 						copyCellExplanation(cCurrent, tCurrent));
 			}
@@ -164,28 +164,10 @@ public class NexmlViewer extends DataWindowAssistantI {
 		tempArray.add(columnName.trim());
 		tempArray.add(rowName.trim());
 
-		
-		//logln("Hiring: "+ findNearestColleagueWithDuty(URIMap.class).getExplanation());
-		//findEmployee()
-		
-		//logln("-----NexmViewer----");
-		//logln("getProject().getHomeFile(): " + getProject().getHomeFile().toString());
-		//logln("getProject(): " + getProject().toString());
-		//getProject().getHomeFile(): File "Vari_new.xml.nex" in directory "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/", id 0
-		//getProject(): mesquite.lib.MesquiteProject@1ee2c5
-		
-		//UriMap = (URIMap)hireEmployee(URIMap.class, "Holds URIs");
-		//treeSourceModule = (TreeSource)hireEmployee(commandRecord, TreeSource.class, "Source of trees");
-		//logln("UriMap path: " + UriMap.toString());
-		
-		//logln("This file is: " + data.getFileName());
-		
-		
 		ListableVector vectors = data.getFile().getFileElements();
 		if (vectors !=null && vectors.size()>0) {
 	   		for (int i = 0; i<vectors.size(); i++){
 	   			if (vectors.elementAt(i) instanceof URIMap){
-	   				logln("Vector at element i: " + vectors.elementAt(i));
 	   				UriMap = (URIMap)vectors.elementAt(i);
 	   			}
 	   		}		
@@ -231,6 +213,18 @@ public class NexmlViewer extends DataWindowAssistantI {
 			
 		
 		return sAnnot;
+	}
+	/*.................................................................................................................*/
+	public boolean hasURIMapElement(){
+		ListableVector vectors = data.getFile().getFileElements();
+		if (vectors !=null && vectors.size()>0) {
+	   		for (int i = 0; i<vectors.size(); i++){
+	   			if (vectors.elementAt(i) instanceof URIMap){
+	   				return true;
+	   			}
+	   		}		
+	   	}
+		return false;
 	}
 	/*.................................................................................................................*/
 	public String getName() {

@@ -53,41 +53,29 @@ public class OboManager extends FileInit {
 	 * set up (if a new file).
 	 */
 	public void fileReadIn(MesquiteFile f) {
-		 //logln("OboManager's fileReadIn method ran");
 		if (f == null || f.getProject() == null)
 			return;
 
 		//properties = new Properties();
 		properties = ObjectConverter.getPredicateHandlerMapping();
 		String path = (String)(properties.get("path"));
-		//logln("---------path from properties: " + path);
 		
 		FileInputStream fs = null;
 		try {
-			//fs = new FileInputStream((String)(properties.get("path")));
 			fs = new FileInputStream(path);
 			domDoc = parse(fs);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logln("Hopefully this line doesn't print.");
+			return;
 		}
 		
 		uriMap = new URIMap(domDoc);
 		if (uriMap!=null) {
 			uriMap.setName(this.toString());//Obo Manager and a unique id
 			uriMap.addToFile( f, getProject(), findElementManager(URIMap.class));
-			//uriMap.addToFile( getProject().getHomeFile(), getProject(), findElementManager(URIMap.class)); 
 			getProject().addFileElement(uriMap);
 		}
-		
-		//logln("-----OboManager----");
-		//logln("This file is: " + f.toString());
-		//logln("uriMap belongs to: " + uriMap.getFileName());
-		//logln("getProject().getHomeFile(): " + getProject().getHomeFile().toString());
-		//logln("getProject(): " + getProject().toString());
-		//getProject().getHomeFile(): File "Vari_new.xml.nex" in directory "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/", id 0
-		//getProject(): mesquite.lib.MesquiteProject@1ee2c5
-		
+
 		/*
 		//Temporary- to get it to skip everything below
 		if (f.getPath() != "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/Vari_new.xml.nex"){
@@ -97,7 +85,7 @@ public class OboManager extends FileInit {
 
 		uriMap.FillOtuHM();
 		uriMap.FillCharHM();
-		logln("Loading ontologies...");
+		logln("\nLoading ontologies...\n");
 		uriMap.FillStateHM();
 		
 		
