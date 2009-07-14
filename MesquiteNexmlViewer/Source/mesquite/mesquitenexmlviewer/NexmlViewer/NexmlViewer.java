@@ -21,6 +21,9 @@ public class NexmlViewer extends DataWindowAssistantI {
 	StringBuffer esb = new StringBuffer(100);
 	
 	NameReference notesNameRef = NameReference.getNameReference("notes");
+	
+	URIMap UriMap = null;
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition,
 			boolean hiredByName) {
@@ -155,16 +158,42 @@ public class NexmlViewer extends DataWindowAssistantI {
 		}
 		String columnName = table.getColumnNameText(cCurrent);
 		String rowName = table.getRowNameText(tCurrent);
-		sAnnot += "Column: " + columnName + " Row: " + rowName + " ";
+		sAnnot += "Column: " + columnName + "    Row: " + rowName + " ";
 
 		Collection<String> tempArray = new ArrayList<String>();
 		tempArray.add(columnName.trim());
 		tempArray.add(rowName.trim());
 
 		
-		/*
-		if (OboManager.uriMap.masterMap.containsKey(tempArray)) {
-			Map<String, String> tempValHM = URIMap.masterMap.get(tempArray);
+		//logln("Hiring: "+ findNearestColleagueWithDuty(URIMap.class).getExplanation());
+		//findEmployee()
+		
+		//logln("-----NexmViewer----");
+		//logln("getProject().getHomeFile(): " + getProject().getHomeFile().toString());
+		//logln("getProject(): " + getProject().toString());
+		//getProject().getHomeFile(): File "Vari_new.xml.nex" in directory "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/", id 0
+		//getProject(): mesquite.lib.MesquiteProject@1ee2c5
+		
+		//UriMap = (URIMap)hireEmployee(URIMap.class, "Holds URIs");
+		//treeSourceModule = (TreeSource)hireEmployee(commandRecord, TreeSource.class, "Source of trees");
+		//logln("UriMap path: " + UriMap.toString());
+		
+		//logln("This file is: " + data.getFileName());
+		
+		
+		ListableVector vectors = data.getFile().getFileElements();
+		if (vectors !=null && vectors.size()>0) {
+	   		for (int i = 0; i<vectors.size(); i++){
+	   			if (vectors.elementAt(i) instanceof URIMap){
+	   				logln("Vector at element i: " + vectors.elementAt(i));
+	   				UriMap = (URIMap)vectors.elementAt(i);
+	   			}
+	   		}		
+	   	}
+		
+
+		if (UriMap.masterMap.containsKey(tempArray)) {
+			Map<String, String> tempValHM = UriMap.masterMap.get(tempArray);
 			String bearerTemp = tempValHM.get("bearer");
 			String holdsTemp = tempValHM.get("holds");
 			String qualityTemp = tempValHM.get("quality");
@@ -184,23 +213,23 @@ public class NexmlViewer extends DataWindowAssistantI {
 			}
 
 			if (holdsTemp == null && relatedTemp == null) {
-				sAnnot += ("Bearer: " + bearerTemp + "    Quality: " + qualityTemp);
+				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: " + qualityTemp);
 			} else if (holdsTemp != null && relatedTemp == null) {
-				sAnnot += ("Bearer: " + bearerTemp
+				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
 						+ "    Quality: " + qualityTemp);
 			} else if (holdsTemp == null && relatedTemp != null) {
-				sAnnot += ("Bearer: " + bearerTemp + "    Quality: "
+				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: "
 						+ qualityTemp + "    Related Entity: " + relatedTemp);
 			} else { // (holdsTemp!=null && relatedTemp!=null)
-				sAnnot += ("Bearer: " + bearerTemp
+				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
 						+ "    Quality: " + qualityTemp
 						+ "    Related Entity: " + relatedTemp);
 			}
-
 		}
-		*/
+			
+		
 		return sAnnot;
 	}
 	/*.................................................................................................................*/

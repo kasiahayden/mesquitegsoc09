@@ -2,6 +2,7 @@ package mesquite.mesquitenexmlviewer.OboManager;
 
 import java.util.*;
 import java.io.*;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -15,8 +16,12 @@ import mesquite.lib.duties.*;
 
 import mesquite.mesquitenexmlviewer.lib.*;
 
+import mesquite.nexml.InterpretNEXML.*;
+
 public class OboManager extends FileInit {
 	public org.w3c.dom.Document domDoc = null;
+	public URIMap uriMap;
+	Properties properties = null;
 
 	/*.................................................................................................................*/
 	public Class getDutyClass() {
@@ -48,33 +53,47 @@ public class OboManager extends FileInit {
 	 * set up (if a new file).
 	 */
 	public void fileReadIn(MesquiteFile f) {
-		 logln("OboManager's fileReadIn method ran");
+		 //logln("OboManager's fileReadIn method ran");
 		if (f == null || f.getProject() == null)
 			return;
 
+		//properties = new Properties();
+		properties = ObjectConverter.getPredicateHandlerMapping();
+		String path = (String)(properties.get("path"));
+		//logln("---------path from properties: " + path);
 		
-
 		FileInputStream fs = null;
-		
 		try {
-			fs = new FileInputStream("/home/kasia/Desktop/Vari_new.xml");
+			//fs = new FileInputStream((String)(properties.get("path")));
+			fs = new FileInputStream(path);
 			domDoc = parse(fs);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logln("Hopefully this line doesn't print.");
 		}
 		
-		URIMap uriMap = new URIMap(domDoc);
+		uriMap = new URIMap(domDoc);
 		if (uriMap!=null) {
 			uriMap.setName(this.toString());//Obo Manager and a unique id
-			uriMap.addToFile( getProject().getHomeFile(), getProject(), findElementManager(URIMap.class)); 
+			uriMap.addToFile( f, getProject(), findElementManager(URIMap.class));
+			//uriMap.addToFile( getProject().getHomeFile(), getProject(), findElementManager(URIMap.class)); 
 			getProject().addFileElement(uriMap);
 		}
 		
+		//logln("-----OboManager----");
+		//logln("This file is: " + f.toString());
+		//logln("uriMap belongs to: " + uriMap.getFileName());
+		//logln("getProject().getHomeFile(): " + getProject().getHomeFile().toString());
+		//logln("getProject(): " + getProject().toString());
+		//getProject().getHomeFile(): File "Vari_new.xml.nex" in directory "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/", id 0
+		//getProject(): mesquite.lib.MesquiteProject@1ee2c5
+		
+		/*
 		//Temporary- to get it to skip everything below
 		if (f.getPath() != "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/Vari_new.xml.nex"){
 			return;
 		}
+		*/
 
 		uriMap.FillOtuHM();
 		uriMap.FillCharHM();
@@ -107,7 +126,20 @@ public class OboManager extends FileInit {
 						keyCoord.add(tempRowName);
 						
 						Map<String, String> valCell = uriMap.stateHM.get(tempStateId);
-	    		    	
+                       
+						/*
+						String bTest = valCell.get("bearer");
+                        String hTest = valCell.get("holds");
+                        String qTest = valCell.get("quality");
+                        String rTest = valCell.get("related");
+                        //logln("Result of calling masterMap: Bearer: " + bTest + " Quality: " + qTest);
+
+                                        if (hTest!= null || rTest!=null){
+                                                logln("Column: " + tempCharName + " Row: " + tempRowName);
+                                                logln("Bearer: " + bTest + "  Holds in Relation to: " + hTest + "  Quality: " + qTest + "  Related Entity: " + rTest);
+                                        }
+	    		    	*/
+                                        
 	    		    	uriMap.masterMap.put(keyCoord, valCell);
 						
 						tempCharName = null;
