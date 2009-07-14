@@ -73,6 +73,7 @@ public class URIMap extends FileElement {
 	/*.................................................................................................................*/
 	public void FillStateHM(){
 		String stateId = null;
+		String descriptionLabel = null;
 		String bearerTyperef = null;
 		String holdsTyperef = null;
 		String qualityTyperef = null;
@@ -86,6 +87,7 @@ public class URIMap extends FileElement {
 					List<Element> stateElements = getChildrenByTagName(statesElement, "state");
 					for (Element stateElement : stateElements){
 						stateId = stateElement.getAttribute("id").trim();
+						descriptionLabel = stateElement.getAttribute("label").trim();
 						List<Element> metaElements = getChildrenByTagName(stateElement, "meta");
 						for (Element metaElement : metaElements){//only one
 							List<Element> phenotypeElements = getChildrenByTagName(metaElement, "phenotype");
@@ -150,6 +152,7 @@ public class URIMap extends FileElement {
 						values.put("holds", holdsTyperef);
 						values.put("quality", qualityTyperef);
 						values.put("related", relatedETyperef);
+						values.put("description", descriptionLabel);
 						
 						stateHM.put(stateId, values);
 
@@ -157,6 +160,7 @@ public class URIMap extends FileElement {
 						holdsTyperef = null;
 						qualityTyperef = null;
 						relatedETyperef = null;
+						descriptionLabel = null;
 					}
 				}	
 			}

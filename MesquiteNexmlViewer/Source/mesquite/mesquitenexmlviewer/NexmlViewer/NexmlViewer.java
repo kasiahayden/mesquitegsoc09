@@ -180,6 +180,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String holdsTemp = tempValHM.get("holds");
 			String qualityTemp = tempValHM.get("quality");
 			String relatedTemp = tempValHM.get("related");
+			String descriptionTemp = tempValHM.get("description");
 			
 			if (URIMap.URIMap.containsKey(bearerTemp)) {
 				bearerTemp = URIMap.URIMap.get(bearerTemp);
@@ -193,21 +194,42 @@ public class NexmlViewer extends DataWindowAssistantI {
 			if (URIMap.URIMap.containsKey(relatedTemp)) {
 				relatedTemp = URIMap.URIMap.get(relatedTemp);
 			}
-
+			
+			/*
 			if (holdsTemp == null && relatedTemp == null) {
-				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: " + qualityTemp);
+				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: " + qualityTemp  + " (" + descriptionTemp + ")");
 			} else if (holdsTemp != null && relatedTemp == null) {
 				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
-						+ "    Quality: " + qualityTemp);
+						+ "    Quality: " + qualityTemp + " (" + descriptionTemp + ")");
 			} else if (holdsTemp == null && relatedTemp != null) {
 				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: "
-						+ qualityTemp + "    Related Entity: " + relatedTemp);
+						+ qualityTemp + " (" + descriptionTemp + ")" + "    Related Entity: " + relatedTemp);
 			} else { // (holdsTemp!=null && relatedTemp!=null)
 				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
-						+ "    Quality: " + qualityTemp
+						+ "    Quality: " + qualityTemp 
+						+ " (" + descriptionTemp + ")"
 						+ "    Related Entity: " + relatedTemp);
+			}
+			*/
+			
+			
+			if (holdsTemp == null && relatedTemp == null) {
+				sAnnot += ("\nBearer: " + bearerTemp + "\nQuality: " + qualityTemp  + " (" + descriptionTemp + ")");
+			} else if (holdsTemp != null && relatedTemp == null) {
+				sAnnot += ("\nBearer: " + bearerTemp
+						+ "\nHolds in Relation to: " + holdsTemp
+						+ "\nQuality: " + qualityTemp + " (" + descriptionTemp + ")");
+			} else if (holdsTemp == null && relatedTemp != null) {
+				sAnnot += ("\nBearer: " + bearerTemp + "\nQuality: "
+						+ qualityTemp + " (" + descriptionTemp + ")" + "\nRelated Entity: " + relatedTemp);
+			} else { // (holdsTemp!=null && relatedTemp!=null)
+				sAnnot += ("\nBearer: " + bearerTemp
+						+ "\nHolds in Relation to: " + holdsTemp
+						+ "\nQuality: " + qualityTemp 
+						+ " (" + descriptionTemp + ")"
+						+ "\nRelated Entity: " + relatedTemp);
 			}
 		}
 			
