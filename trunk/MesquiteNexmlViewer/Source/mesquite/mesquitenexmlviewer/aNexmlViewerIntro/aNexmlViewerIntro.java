@@ -1,4 +1,4 @@
-package mesquite.mesquitenexmlviewer.NexmlViewer.aNexmlViewerIntro;
+package mesquite.mesquitenexmlviewer.aNexmlViewerIntro;
 
 import mesquite.lib.duties.PackageIntro;
 
