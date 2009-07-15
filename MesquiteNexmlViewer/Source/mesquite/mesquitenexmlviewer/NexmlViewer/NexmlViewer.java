@@ -170,7 +170,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 		}
 		String columnName = table.getColumnNameText(cCurrent);
 		String rowName = table.getRowNameText(tCurrent);
-		sAnnot += "Column: " + columnName + "    Row: " + rowName + " ";
+		sAnnot += "Taxon: " + rowName;
+		//sAnnot += "Column: " + columnName + "    Row: " + rowName + " ";
 
 		Collection<String> tempArray = new ArrayList<String>();
 		tempArray.add(columnName.trim());
@@ -207,10 +208,12 @@ public class NexmlViewer extends DataWindowAssistantI {
 				relatedTemp = URIMap.URIMap.get(relatedTemp);
 			}
 			
-			/*
+			
 			if (holdsTemp == null && relatedTemp == null) {
-				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: " + qualityTemp  + " (" + descriptionTemp + ")");
-			} else if (holdsTemp != null && relatedTemp == null) {
+				sAnnot += ("  Bearer: " + bearerTemp + "  Quality: " + qualityTemp  + " (" + descriptionTemp + ")");
+			} 
+			/*
+			else if (holdsTemp != null && relatedTemp == null) {
 				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
 						+ "    Quality: " + qualityTemp + " (" + descriptionTemp + ")");
@@ -227,6 +230,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			*/
 			
 			
+			/*//New lines between each
 			if (holdsTemp == null && relatedTemp == null) {
 				sAnnot += ("\nBearer: " + bearerTemp + "\nQuality: " + qualityTemp  + " (" + descriptionTemp + ")");
 			} else if (holdsTemp != null && relatedTemp == null) {
@@ -243,6 +247,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 						+ " (" + descriptionTemp + ")"
 						+ "\nRelated Entity: " + relatedTemp);
 			}
+			*/
 		}
 			
 		
