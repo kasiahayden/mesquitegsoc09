@@ -32,7 +32,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			addMenuItem("Display NeXML", MesquiteModule.makeCommand(
 					"displayNeXMLTree", this));
 			if (containerOfModule() instanceof MesquiteWindow) {
-				xmlTool = new TableTool(this, "DisplayNeXML", getPath(), "xml.gif", 1,1,"Display NeXML", "Displays NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXMLTree", this), null, null);
+				xmlTool = new TableTool(this, "DisplayNeXML", getPath(), "nexml.gif", 1,1,"Display Phenex-generated NeXML", "Displays Phenex-generated NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXMLTree", this), null, null);
 				xmlTool.setWorksOnColumnNames(true);
 				xmlTool.setWorksOnRowNames(true);
 				((MesquiteWindow)containerOfModule()).addTool(xmlTool);
@@ -212,6 +212,9 @@ public class NexmlViewer extends DataWindowAssistantI {
 			if (holdsTemp == null && relatedTemp == null) {
 				sAnnot += ("  Bearer: " + bearerTemp + "  Quality: " + qualityTemp  + " (" + descriptionTemp + ")");
 			} 
+			else {
+				sAnnot += ("  (No annotation found.)");
+			}
 			/*
 			else if (holdsTemp != null && relatedTemp == null) {
 				sAnnot += ("    Bearer: " + bearerTemp
