@@ -1,0 +1,31 @@
+Setup Instructions for NeXML and MesquiteNexmlViewer
+
+1) If you have not already done so, install the most recent version of Mesquite. This may require installing java if your computer does not already have java loaded. To install mesquite, follow the instructions here: http://mesquiteproject.org/mesquite/download/download.html
+
+
+2) Unzip the zip files nexml.zip and mesquitenexmlviewer.zip and org.zip. Once they are unzipped they should be named "nexml", "mesquitenexmlviewer" and "org", respectively.
+
+
+3a) Put the unzipped file named "org" inside of your "Mesquite_Folder" folder. On a Mac, your file hierarchy might look like this:
+
+Applications < mesquite_folder < org
+
+
+3b) Inside the "Mesquite_Folder" folder, you should see a folder named "mesquite." In this "mesquite" folder, put the files named "nexml" and "mesquitenexmlviewer." On a Mac, your file hierarchy might look like this:
+
+Applications < mesquite_folder < mesquite < nexml
+Applications < mesquite_folder < mesquite < mesquitenexmlviewer
+
+
+4) Run Mesquite and check to see that the modules loaded. On the startup screen you should be able to scroll through the text and see output that will tell you the modules were successfully loaded. It will look something like:
+
+Additional modules loaded from [Your path to Mesquite_Folder]
+ nexml
+
+Additional modules loaded from [Your path to Mesquite_Folder]
+ mesquitenexmlviewer
+
+
+5) Open an NeXML file in Mesquite. A pop-up box will appear and Mesquite will give you the option to choose your interpreter. Scroll down until you see NeXML and select it. The matrix file should automatically open. 
+
+You can view any cell's annotations by clicking on the Phenex button in the toolbar and selecting a cell. (Run your cursor over the tools to see a tool description in the annotations panel. The Phenex button's description is "Display Phenex-generated NeXML".) Annotations will show in the footnotes box directly beneath the matrix.

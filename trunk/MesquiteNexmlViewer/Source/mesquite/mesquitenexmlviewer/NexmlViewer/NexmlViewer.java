@@ -1,14 +1,18 @@
 package mesquite.mesquitenexmlviewer.NexmlViewer;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
 import mesquite.lib.duties.*;
 import mesquite.lib.table.*;
-import mesquite.mesquitenexmlviewer.OboManager.OboManager;
 import mesquite.mesquitenexmlviewer.lib.URIMap;
 import mesquite.categ.lib.CategoricalData;
 import mesquite.categ.lib.CategoricalState;
+import att.grappa.*;
+import att.grappa.Parser;
+
 
 /* ======================================================================== */
 public class NexmlViewer extends DataWindowAssistantI {
@@ -40,6 +44,20 @@ public class NexmlViewer extends DataWindowAssistantI {
 				setUseMenubar(false); //menu available by touching button
 
 			}
+
+			
+			String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
+			try {
+				  FileInputStream input = new FileInputStream(dotFile);
+				  Parser graphParser = new Parser(input, System.err);
+				  graphParser.parse();
+				  Graph newGraph = graphParser.getGraph();
+				  logln("Grappa working ----------------");
+			}
+			catch(Exception e) {
+				logln("Grappa unsuccessful.");
+			}
+			
 			
 		return true;
 	}
