@@ -1,7 +1,12 @@
 package mesquite.mesquitenexmlviewer.NexmlViewer;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Panel;
+import java.awt.image.ImageObserver;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 import mesquite.lib.*;
 import mesquite.lib.characters.*;
@@ -30,6 +35,10 @@ public class NexmlViewer extends DataWindowAssistantI {
 	
 	URIMap UriMap = null;
 	
+	PictureWindow pictureWindow;
+	String pathToPicture;
+	
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition,
 			boolean hiredByName) {
@@ -57,11 +66,28 @@ public class NexmlViewer extends DataWindowAssistantI {
 			catch(Exception e) {
 				logln("Grappa unsuccessful.");
 			}
+
+
+			pictureWindow = new PictureWindow(this);
+			setModuleWindow(pictureWindow);
+			String pic = "/home/kasia/Pictures/img_3148.jpg";
+			pictureWindow.setPath(pic);
 			
 			
+				 		resetContainingMenuBar();
+				 		resetAllWindowsMenus();
+						pictureWindow.setVisible(true);
+
+
+		 		setModuleWindow(pictureWindow);
+		 		resetContainingMenuBar();
+		 		resetAllWindowsMenus();
+			
+			//Keep:
 		return true;
 	}
 
+	
 	/*.................................................................................................................*/
 	/** method called by data window to inform assistant that data have changed */
 	public void setTableAndData(MesquiteTable table, CharacterData data) {
@@ -312,5 +338,76 @@ public class NexmlViewer extends DataWindowAssistantI {
 				}
 		}
 		return s;
+	}
+	
+	/* ======================================================================== */
+	public class PictureWindow extends MesquiteWindow implements Commandable  {
+		String path;
+		Image image;
+		ImagePanel imagePanel;
+		MediaTracker mt = null;
+			boolean errored = true;
+			int count =0;
+		
+		public PictureWindow (NexmlViewer nexmlViewer){
+			super(nexmlViewer, true); //infobar
+	      		setWindowSize(64,64);
+	      		setMinimalMenus(true);
+			//getGraphicsArea().setLayout(new BorderLayout());
+			addToWindow(imagePanel = new ImagePanel(this));
+			imagePanel.setSize(64, 64);
+			setLocation(0,0);
+			imagePanel.setVisible(true);
+			resetTitle();
+	      		setWindowSize(64,64);
+		}
+		/*.................................................................................................................*/
+		/** When called the window will determine its own title.  MesquiteWindows need
+		to be self-titling so that when things change (names of files, tree blocks, etc.)
+		they can reset their titles properly*/
+		public void resetTitle(){
+			setTitle("Picture: " + path); //TODO: what tree?
+		}
+		public void checkSize(){
+			
+		}
+		public boolean setPath(String path){
+			this.path = path;
+			image = MesquiteImage.getImage(path);
+			if (MesquiteImage.waitForImageToLoad(image, this.getOuterContentsArea())){
+				imagePanel.setImage(image);
+				imagePanel.repaint();
+				setResizable(true);
+		      	if (image!=null) {
+		      		setWindowSize(image.getWidth(imagePanel),image.getHeight(imagePanel));
+		      		imagePanel.setSize(image.getWidth(imagePanel),image.getHeight(imagePanel));
+		      	}
+				setResizable(false);
+				resetTitle();
+				return true;
+			}
+			return false;
+		}
+	}
+	/* ======================================================================== */
+	/** The Panel containing the Mesquite logo on the startup window */
+	class ImagePanel extends Panel {
+		Image pic;
+		PictureWindow pw;
+		public ImagePanel (PictureWindow pw) {
+			setBackground(Color.white);
+			this.pw = pw;
+		}
+		/*.................................................................................................................*/
+		public void paint(Graphics g) {
+		   	if (MesquiteWindow.checkDoomed(this))
+		   		return;
+				g.drawImage(pic,0,0,(ImageObserver)this);
+			MesquiteWindow.uncheckDoomed(this);
+		}
+		public void setImage(Image i){
+			pic = i;
+		}
+	
 	}
 }
