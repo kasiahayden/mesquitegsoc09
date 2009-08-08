@@ -1,0 +1,9 @@
+graph G {
+
+	n0 [shape=ellipse, pos="536,112", width="0.75", height="0.50"];
+	n1 [shape=ellipse, pos="614,112", width="0.92", height="0.50"];
+	n2 [shape=diamond, style=filled, color=lightgrey, pos="383,112", width="0.89", height="0.67"];
+	n3 [shape=diamond, style=filled, color=lightgrey, pos="462,112", width="0.81", height="0.67"];
+
+	n0 -- n1 -- n2 -- n3;
+}
