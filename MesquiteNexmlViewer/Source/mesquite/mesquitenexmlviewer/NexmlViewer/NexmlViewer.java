@@ -76,6 +76,9 @@ public class NexmlViewer extends DataWindowAssistantI {
 
 			
 			String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
+			//String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/ERTemp.dot";
+			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/cluster.dot";
+			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/ER.dot";
 			Graph newGraph = null;
 			try {
 				  FileInputStream input = new FileInputStream(dotFile);
@@ -92,27 +95,25 @@ public class NexmlViewer extends DataWindowAssistantI {
 			pictureWindow = new PictureWindow(this);
 			setModuleWindow(pictureWindow);
 			String pic = "/home/kasia/Pictures/img_3148.jpg";
-			//pictureWindow.setPath(pic);
-			//Component graphComponent = (Component)newGraph;
-			//pictureWindow.graphics[0].add(comp)
-			//GrappaPanel grappaPanel = new GrappaPanel();
+			pictureWindow.setPath(pic);
+			
+
+			/*
 			pictureWindow.addToWindow(grappaPanel);
 			pictureWindow.setCurrentObject(newGraph);
+			*/
 			
-			frame = new DemoFrame(newGraph);
-			//frame.show();
+			frame = new DemoFrame(newGraph);			
 			
-			
-				 		resetContainingMenuBar();
-				 		resetAllWindowsMenus();
-						pictureWindow.setVisible(true);
+			resetContainingMenuBar();
+			resetAllWindowsMenus();
+			pictureWindow.setVisible(true);
 
 
-		 		setModuleWindow(pictureWindow);
-		 		resetContainingMenuBar();
-		 		resetAllWindowsMenus();
+			setModuleWindow(pictureWindow);
+			resetContainingMenuBar();
+			resetAllWindowsMenus();
 			
-			//Keep:
 		return true;
 	}
 
@@ -229,8 +230,15 @@ public class NexmlViewer extends DataWindowAssistantI {
 				this.containerOfModule().setAnnotation(getFootnoteAnnotation(),
 						copyCellExplanation(cCurrent, tCurrent));
 			}
-		} else
+		} else{
 			return super.doCommand(commandName, arguments, checker);
+		}
+		/* Kasia: Need command for displaying annotations
+		pictureWindow = new PictureWindow(this);
+		setModuleWindow(pictureWindow);
+		String pic = "/home/kasia/Pictures/img_3148.jpg";
+		pictureWindow.setPath(pic);
+		*/
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -471,7 +479,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 
 		frame = new DemoFrame(graph);
 
-		frame.show();
+		//frame.show();
 	}
 	class DemoFrame extends JFrame implements ActionListener {
 		GrappaPanel gp;
@@ -500,11 +508,11 @@ public class NexmlViewer extends DataWindowAssistantI {
 			});
 
 			JScrollPane jsp = new JScrollPane();
-			jsp.getViewport().setBackingStoreEnabled(true);
+			//jsp.getViewport().setBackingStoreEnabled(true);
 
 			gp = new GrappaPanel(graph);
 			gp.addGrappaListener(new GrappaAdapter());
-			gp.setScaleToFit(false);
+			gp.setScaleToFit(false);//Kasia originally false
 
 			java.awt.Rectangle bbox = graph.getBoundingBox().getBounds();
 
