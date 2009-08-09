@@ -45,7 +45,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 	MesquiteTable table;
 	CharacterData data;
 	
-	TableTool xmlTool;
+	TableTool nexmlTool;
+	TableTool dotTool;
 
 	int cCurrent;
 	int tCurrent;
@@ -66,61 +67,31 @@ public class NexmlViewer extends DataWindowAssistantI {
 	public boolean startJob(String arguments, Object condition,
 			boolean hiredByName) {
 			addMenuItem("Display NeXML", MesquiteModule.makeCommand(
-					"displayNeXMLTree", this));
+					"displayNeXML", this));
 			if (containerOfModule() instanceof MesquiteWindow) {
-				xmlTool = new TableTool(this, "DisplayNeXML", getPath(), "nexml.gif", 1,1,"Display Phenex-generated NeXML", "Displays Phenex-generated NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXMLTree", this), null, null);
-				xmlTool.setWorksOnColumnNames(true);
-				xmlTool.setWorksOnRowNames(true);
-				((MesquiteWindow)containerOfModule()).addTool(xmlTool);
-				xmlTool.setPopUpOwner(this);
+				nexmlTool = new TableTool(this, "DisplayNeXML", getPath(), "nexml.gif", 1,1,"Displays Phenex-generated NeXML annotations", "Displays Phenex-generated NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXML", this), null, null);
+				nexmlTool.setWorksOnColumnNames(true);
+				nexmlTool.setWorksOnRowNames(true);
+				((MesquiteWindow)containerOfModule()).addTool(nexmlTool);
+				nexmlTool.setPopUpOwner(this);
 				setUseMenubar(false); //menu available by touching button
 
 			}
 			
-			String dotPath = null;
-			try {
-				dotPath = this.getProject().getHomeDirectoryName();
-		        //logln("Path is: " + thisPath);
-				dotPath += "dot_temp.dot";
-		        BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
-		        out.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
-		        out.close();
-		    } catch (IOException e) {
-		    	logln("Problem writing dot file.");
-		    }
+			addMenuItem("Display dot graph", MesquiteModule.makeCommand(
+					"displayDotGraph", this));
+			if (containerOfModule() instanceof MesquiteWindow) {
+				dotTool = new TableTool(this, "displayDotGraph", getPath(), "dot.gif", 1,1,"Displays dot graph of NeXML annotations", "Displays dot graphs of Phenex-generated NeXML annotations.", MesquiteModule.makeCommand("displayDotGraph", this), null, null);
+				dotTool.setWorksOnColumnNames(true);
+				dotTool.setWorksOnRowNames(true);
+				((MesquiteWindow)containerOfModule()).addTool(dotTool);
+				dotTool.setPopUpOwner(this);
+				setUseMenubar(false); //menu available by touching button
 
-		    //String dotFile = "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/dot_temp.dot";
-			//String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
-			//String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/ERTemp.dot";
-			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/cluster.dot";
-			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/ER.dot";
-			//String dotFile = "graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}";
-			Graph newGraph = null;
-			try {
-				  FileInputStream input = new FileInputStream(dotPath);
-				  Parser graphParser = new Parser(input, System.err);
-				  graphParser.parse();
-				  newGraph = graphParser.getGraph();
-				  //logln("Grappa working ----------------");
 			}
-			catch(Exception e) {
-				logln("Grappa failed.");
-			}
-
-
-			pictureWindow = new PictureWindow(this);
-			setModuleWindow(pictureWindow);
-			String pic = "/home/kasia/Pictures/img_3148.jpg";
-			pictureWindow.setPath(pic);
+					
 			
-
 			/*
-			pictureWindow.addToWindow(grappaPanel);
-			pictureWindow.setCurrentObject(newGraph);
-			*/
-			
-			frame = new DemoFrame(newGraph);			
-			
 			resetContainingMenuBar();
 			resetAllWindowsMenus();
 			pictureWindow.setVisible(true);
@@ -129,6 +100,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			setModuleWindow(pictureWindow);
 			resetContainingMenuBar();
 			resetAllWindowsMenus();
+			*/
 			
 		return true;
 	}
@@ -240,12 +212,61 @@ public class NexmlViewer extends DataWindowAssistantI {
 	/*.................................................................................................................*/
 	public Object doCommand(String commandName, String arguments,
 			CommandChecker checker) {
-		if (checker.compare(this.getClass(), "Displays NeXML annotations",
-				"[name of module]", commandName, "displayNeXMLTree")) {
+		if (checker.compare(this.getClass(),
+				"Displays Phenex-generated NeXML annotations",
+				"[name of module]", commandName, "displayNeXML")) {
 			if (table != null && data != null && hasURIMapElement() == true) {
 				this.containerOfModule().setAnnotation(getFootnoteAnnotation(),
 						copyCellExplanation(cCurrent, tCurrent));
 			}
+		}
+		/*
+		 * pictureWindow = new PictureWindow(this);
+		 * setModuleWindow(pictureWindow); String pic =
+		 * "/home/kasia/Pictures/img_3148.jpg"; pictureWindow.setPath(pic);
+		 * //pictureWindow.addToWindow(grappaPanel);
+		 * //pictureWindow.setCurrentObject(newGraph);
+		 */
+
+		else if (checker.compare(this.getClass(),
+				"Displays dot graph of NeXML annotations", "[name of module]",
+				commandName, "displayDotGraph")) {
+			String dotPath = null;
+			try {
+				dotPath = this.getProject().getHomeDirectoryName();
+				// logln("Path is: " + thisPath);
+				dotPath += "dot_temp.dot";
+				BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
+				out
+						.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+				out.close();
+			} catch (IOException e) {
+				logln("Problem writing dot file.");
+			}
+
+			// String dotFile =
+			// "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/dot_temp.dot";
+			// String dotFile =
+			// "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
+			// String dotFile =
+			// "/home/kasia/projects/zgrviewer/data/graphs/ERTemp.dot";
+			// String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/cluster.dot";
+			// String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/ER.dot";
+			// String dotFile =
+			// "graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}";
+
+			Graph newGraph = null;
+			try {
+				FileInputStream input = new FileInputStream(dotPath);
+				Parser graphParser = new Parser(input, System.err);
+				graphParser.parse();
+				newGraph = graphParser.getGraph();
+				// logln("Grappa working ----------------");
+			} catch (Exception e) {
+				logln("Grappa failed.");
+			}
+			frame = new DemoFrame(newGraph);
+
 		} else{
 			return super.doCommand(commandName, arguments, checker);
 		}
