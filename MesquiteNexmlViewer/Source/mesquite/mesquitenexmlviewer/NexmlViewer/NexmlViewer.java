@@ -14,7 +14,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.ImageObserver;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -73,22 +76,35 @@ public class NexmlViewer extends DataWindowAssistantI {
 				setUseMenubar(false); //menu available by touching button
 
 			}
-
 			
-			String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
+			String dotPath = null;
+			try {
+				dotPath = this.getProject().getHomeDirectoryName();
+		        //logln("Path is: " + thisPath);
+				dotPath += "dot_temp.dot";
+		        BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
+		        out.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+		        out.close();
+		    } catch (IOException e) {
+		    	logln("Problem writing dot file.");
+		    }
+
+		    //String dotFile = "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/dot_temp.dot";
+			//String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
 			//String dotFile = "/home/kasia/projects/zgrviewer/data/graphs/ERTemp.dot";
 			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/cluster.dot";
 			//String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/ER.dot";
+			//String dotFile = "graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}";
 			Graph newGraph = null;
 			try {
-				  FileInputStream input = new FileInputStream(dotFile);
+				  FileInputStream input = new FileInputStream(dotPath);
 				  Parser graphParser = new Parser(input, System.err);
 				  graphParser.parse();
 				  newGraph = graphParser.getGraph();
-				  logln("Grappa working ----------------");
+				  //logln("Grappa working ----------------");
 			}
 			catch(Exception e) {
-				logln("Grappa unsuccessful.");
+				logln("Grappa failed.");
 			}
 
 
