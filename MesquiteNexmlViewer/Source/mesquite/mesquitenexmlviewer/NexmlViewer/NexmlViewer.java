@@ -63,6 +63,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 	GrappaPanel grappaPanel;
 	public DemoFrame  frame  = null;
 	
+	public Map<String, String> nodeHM = new HashMap<String, String>();
+	
 	/*.................................................................................................................*/
 	public boolean startJob(String arguments, Object condition,
 			boolean hiredByName) {
@@ -87,7 +89,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 				((MesquiteWindow)containerOfModule()).addTool(dotTool);
 				dotTool.setPopUpOwner(this);
 				setUseMenubar(false); //menu available by touching button
-
 			}
 					
 			
@@ -221,9 +222,10 @@ public class NexmlViewer extends DataWindowAssistantI {
 			}
 		}
 		/*
-		 * pictureWindow = new PictureWindow(this);
+		 * pictureWindow = new Pic//getDotGraphElements();tureWindow(this);
 		 * setModuleWindow(pictureWindow); String pic =
 		 * "/home/kasia/Pictures/img_3148.jpg"; pictureWindow.setPath(pic);
+						
 		 * //pictureWindow.addToWindow(grappaPanel);
 		 * //pictureWindow.setCurrentObject(newGraph);
 		 */
@@ -231,14 +233,19 @@ public class NexmlViewer extends DataWindowAssistantI {
 		else if (checker.compare(this.getClass(),
 				"Displays dot graph of NeXML annotations", "[name of module]",
 				commandName, "displayDotGraph")) {
+			
 			String dotPath = null;
 			try {
 				dotPath = this.getProject().getHomeDirectoryName();
 				// logln("Path is: " + thisPath);
 				dotPath += "dot_temp.dot";
 				BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
-				out
-						.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+				//out.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+				//out.write("graph G {n0 [shape=ellipse, pos=\"240,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"0,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"80,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"160,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+				//logln("Static graph is: graph G {n0 [shape=ellipse, pos=\"240,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"0,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"80,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"160,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
+				out.write(getDotGraphElements());
+				
+				getDotGraphElements();
 				out.close();
 			} catch (IOException e) {
 				logln("Problem writing dot file.");
@@ -265,6 +272,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			} catch (Exception e) {
 				logln("Grappa failed.");
 			}
+			
 			frame = new DemoFrame(newGraph);
 
 		} else{
@@ -311,7 +319,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String holdsTemp = tempValHM.get("holds");
 			String qualityTemp = tempValHM.get("quality");
 			String relatedTemp = tempValHM.get("related");
-			String descriptionTemp = tempValHM.get("description");
+			String descriptionTemp = tempValHM.get("description"); //Doesn't need to be fished from URIMap.URIMap- is in masterMap
 			
 			if (URIMap.URIMap.containsKey(bearerTemp)) {
 				bearerTemp = URIMap.URIMap.get(bearerTemp);
@@ -337,7 +345,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			else if (holdsTemp != null && relatedTemp == null) {
 				sAnnot += ("    Bearer: " + bearerTemp
 						+ "    Holds in Relation to: " + holdsTemp
-						+ "    Quality: " + qualityTemp + " (" + descriptionTemp + ")");
+						+ "    Quality: " +		 qualityTemp + " (" + descriptionTemp + ")");
 			} else if (holdsTemp == null && relatedTemp != null) {
 				sAnnot += ("    Bearer: " + bearerTemp + "    Quality: "
 						+ qualityTemp + " (" + descriptionTemp + ")" + "    Related Entity: " + relatedTemp);
@@ -374,6 +382,184 @@ public class NexmlViewer extends DataWindowAssistantI {
 		
 		return sAnnot;
 	}
+	/*.................................................................................................................*/
+	public String getDotGraphElements(){
+		String graph = null;
+		
+		String columnName = table.getColumnNameText(cCurrent);
+		String rowName = table.getRowNameText(tCurrent);
+	
+		Collection<String> tempArray = new ArrayList<String>();
+		tempArray.add(columnName.trim());
+		tempArray.add(rowName.trim());
+
+		ListableVector vectors = data.getFile().getFileElements();
+		if (vectors !=null && vectors.size()>0) {
+	   		for (int i = 0; i<vectors.size(); i++){
+	   			if (vectors.elementAt(i) instanceof URIMap){
+	   				UriMap = (URIMap)vectors.elementAt(i);
+	   			}
+	   		}		
+	   	}
+		
+
+		if (UriMap.masterMap.containsKey(tempArray)) {
+			Map<String, String> tempValHM = UriMap.masterMap.get(tempArray);
+			String bearerTemp = tempValHM.get("bearer");
+			String holdsTemp = tempValHM.get("holds");
+			String qualityTemp = tempValHM.get("quality");
+			String relatedTemp = tempValHM.get("related");
+			String descriptionTemp = tempValHM.get("description");
+			
+			if (URIMap.URIMap.containsKey(bearerTemp)) {
+				bearerTemp = URIMap.URIMap.get(bearerTemp);
+			}
+			if (URIMap.URIMap.containsKey(holdsTemp)) {
+				holdsTemp = URIMap.URIMap.get(holdsTemp);
+			}
+			if (URIMap.URIMap.containsKey(qualityTemp)) {
+				qualityTemp = URIMap.URIMap.get(qualityTemp);
+			}
+			if (URIMap.URIMap.containsKey(relatedTemp)) {
+				relatedTemp = URIMap.URIMap.get(relatedTemp);
+			}	
+			
+			String taxonNode = rowName;
+			
+			int nodeCount = 0;
+			boolean descriptionPresent = false;
+			
+			if (bearerTemp != null){
+				++nodeCount;		
+				String intNodeCount = "" + nodeCount;
+				nodeHM.put(intNodeCount, bearerTemp);
+				logln("bearerTemp: " + bearerTemp);
+			}
+			if (holdsTemp != null){
+				++nodeCount;
+				String intNodeCount = "" + nodeCount;
+				nodeHM.put(intNodeCount, holdsTemp);
+				logln("holdsTemp: " + holdsTemp);
+			}
+			if (qualityTemp != null){
+				++nodeCount;
+				String intNodeCount = "" + nodeCount;
+				nodeHM.put(intNodeCount, qualityTemp);
+				logln("qualityTemp: " + qualityTemp);
+			}
+			if (relatedTemp != null){
+				++nodeCount;
+				String intNodeCount = "" + nodeCount;
+				nodeHM.put(intNodeCount, relatedTemp);
+				logln("relatedTemp: " + relatedTemp);
+			}
+			if (descriptionTemp != null){
+				descriptionPresent = true;
+				logln("description is present");
+			}
+			
+			logln("nodeCount = " + nodeCount);
+			
+			
+			if (nodeHM.size() == nodeCount){
+				logln("nodeHM == nodeCount ---------");
+			}
+			else {
+				logln("nodeHM != nodeCount");
+				logln("nodeHM.size = " + nodeHM.size() + "and nodeCount = " + nodeCount);
+			}
+			///*
+			if (nodeHM.size() != 0){
+				double xFromLeft = 0;
+				double yFromBottom = 0;
+				String shape = "ellipse";
+				double width = 3; //0.92;
+				double height = 0.50;
+				
+				graph = "graph G {";
+				
+				/*
+				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
+					String nodeKey = "" + nodeNum;
+					graph += "n" + nodeNum + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\"," + "label=\"" + nodeHM.get(nodeKey) + "\"]; ";
+					xFromLeft += 80;
+				}
+				*/
+				
+				
+				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
+					String nodeKey = "" + nodeNum;
+					double labelLength = nodeHM.get(nodeKey).length();
+					width = (labelLength * (.125));
+					logln("width: " + width + " for " + nodeHM.get(nodeKey));
+					if (nodeNum > 1){
+						xFromLeft += (width/2);
+					}
+					graph += "\"" + nodeHM.get(nodeKey) + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
+					xFromLeft += (80 + (width/2));
+				}
+				
+				/*
+				//Root node
+				yFromBottom = 112;
+				xFromLeft = (xFromLeft - 80)/2; //centering
+				graph += "\"" + taxonNode + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\"," + "label=\"" + taxonNode + "\"]; ";
+				*/
+				
+				
+				//Root node
+				yFromBottom = 112;
+				xFromLeft = (xFromLeft - (80 + (width/2)))/2; //centering
+				//xFromLeft = (xFromLeft - 80)/2; //centering
+				width = (taxonNode.length() * (.125));
+				logln("width: " + width + " for " + taxonNode);
+				graph += "\"" + taxonNode + "\"" + " [*/shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
+				
+				/*
+				//Link nodes
+				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
+					String nodeKey = "" + nodeNum;
+					String nodeName = "\"" + nodeHM.get(nodeKey) + "\"";
+					graph += "\"" + taxonNode + "\"" + " -- " + "n" + nodeNum + "[headclip=true];";	// tailclip=false];";
+				}
+				graph += "}";
+				*/
+				
+				//Link nodes
+				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
+					String nodeKey = "" + nodeNum;
+					String nodeName = "\"" + nodeHM.get(nodeKey) + "\"";
+					graph += "\"" + taxonNode + "\"" + " -- " + nodeName + ";";
+				}
+				graph += "}";
+				
+				
+				/*
+				for (int nodeNum = 0; nodeNum < nodeCount; nodeNum++){
+					if (nodeNum != 0){
+						graph += " -- ";
+					}
+					graph += "n" + nodeNum;
+				}
+				graph += ";}";	
+				*/
+			}
+			
+			logln("Generated graph from most recent click is:\n" + graph);
+			
+			
+			/*
+			 * Generated graph from most recent click is:
+graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [shape=ellipse, pos="80.0,112.0", width="0.92", height="0.5"]; n2 -- n2 -- ;}
+			 */
+			
+					
+			//*/
+		}
+		return graph;
+		
+	}
+	
 	/*.................................................................................................................*/
 	public boolean hasURIMapElement(){
 		ListableVector vectors = data.getFile().getFileElements();
