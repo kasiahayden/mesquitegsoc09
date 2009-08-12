@@ -427,7 +427,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String taxonNode = rowName;
 			
 			int nodeCount = 0;
-			boolean descriptionPresent = false;
+			//boolean descriptionPresent = false;
 			
 			if (bearerTemp != null){
 				++nodeCount;		
@@ -454,8 +454,10 @@ public class NexmlViewer extends DataWindowAssistantI {
 				logln("relatedTemp: " + relatedTemp);
 			}
 			if (descriptionTemp != null){
-				descriptionPresent = true;
-				logln("description is present");
+				++nodeCount;
+				String intNodeCount = "" + nodeCount;
+				nodeHM.put(intNodeCount, descriptionTemp);
+				logln("descriptionTemp: " + descriptionTemp);
 			}
 			
 			logln("nodeCount = " + nodeCount);
@@ -470,21 +472,33 @@ public class NexmlViewer extends DataWindowAssistantI {
 			}
 			///*
 			if (nodeHM.size() != 0){
-				double xFromLeft = 0;
-				double yFromBottom = 0;
+				double xFromLeft = 0.0;
+				double yFromBottom = 0.0;
+				double nodeInterval = 100.0;
 				String shape = "ellipse";
-				double width = 3; //0.92;
+				double width = 1.0;
 				double height = 0.50;
 				
 				graph = "graph G {";
 				
-				/*
+				//Root node
+				width = (taxonNode.length() * (.125));
+				logln("width: " + width + " for " + taxonNode + "\nxFromLeft: " + xFromLeft);
+				yFromBottom += nodeCount * nodeInterval;
+				graph += "\"" + taxonNode + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
+				//xFromLeft = (width/2.0) * 20;		
+				
 				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
 					String nodeKey = "" + nodeNum;
-					graph += "n" + nodeNum + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\"," + "label=\"" + nodeHM.get(nodeKey) + "\"]; ";
-					xFromLeft += 80;
+					width = (nodeHM.get(nodeKey).length() * (.125));
+					logln("width: " + width + " for " + nodeHM.get(nodeKey) + "\nxFromLeft: " + xFromLeft);
+					yFromBottom -= nodeInterval;
+					//xFromLeft += (taxonNode.length() * (.125) * 50.0);
+					//xFromLeft += (width/2.0) * 20;
+					graph += "n" + nodeNum + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\" " + "label=\"" + nodeHM.get(nodeKey) + "\"]; ";
+					//xFromLeft += (width/2.0) * 20;
 				}
-				*/
+				/*
 				
 				
 				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
@@ -498,6 +512,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 					graph += "\"" + nodeHM.get(nodeKey) + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
 					xFromLeft += (80 + (width/2));
 				}
+				*/
 				
 				/*
 				//Root node
@@ -507,13 +522,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 				*/
 				
 				
-				//Root node
-				yFromBottom = 112;
-				xFromLeft = (xFromLeft - (80 + (width/2)))/2; //centering
-				//xFromLeft = (xFromLeft - 80)/2; //centering
-				width = (taxonNode.length() * (.125));
-				logln("width: " + width + " for " + taxonNode);
-				graph += "\"" + taxonNode + "\"" + " [*/shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
 				
 				/*
 				//Link nodes
@@ -525,6 +533,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 				graph += "}";
 				*/
 				
+				/*
 				//Link nodes
 				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
 					String nodeKey = "" + nodeNum;
@@ -534,16 +543,26 @@ public class NexmlViewer extends DataWindowAssistantI {
 				graph += "}";
 				
 				
-				/*
-				for (int nodeNum = 0; nodeNum < nodeCount; nodeNum++){
-					if (nodeNum != 0){
-						graph += " -- ";
-					}
-					graph += "n" + nodeNum;
+				*/
+				
+				//Link nodes
+				double lineTop = nodeCount * nodeInterval;
+				double lineBottom = 0;
+				double halfNodeHeight = (height/2) * 75;
+				graph += "\"" + taxonNode + "\"";
+				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
+					lineTop -= halfNodeHeight;
+					lineBottom = lineTop - nodeInterval + (2 * halfNodeHeight);
+					graph += " -- ";
+					graph += "n" + nodeNum + " [pos=\"" + xFromLeft + "," + lineTop + " " + xFromLeft + "," + lineBottom + "\"]; ";
+					graph += "n" + nodeNum + " ";
+					lineTop = lineBottom - halfNodeHeight;
 				}
 				graph += ";}";	
-				*/
+				
 			}
+			
+			//[pos="551,188 565,171 587,145 600,129"];
 			
 			logln("Generated graph from most recent click is:\n" + graph);
 			
@@ -735,7 +754,7 @@ graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [sh
 
 			gp = new GrappaPanel(graph);
 			gp.addGrappaListener(new GrappaAdapter());
-			gp.setScaleToFit(false);//Kasia originally false
+			gp.setScaleToFit(true);//Kasia originally false
 
 			java.awt.Rectangle bbox = graph.getBoundingBox().getBounds();
 
