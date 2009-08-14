@@ -24,8 +24,6 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 
-import mesquite.mesquitenexmlviewer.OboManager.*;
-
 
 
 /** A class that contains information regarding submodels of stochastic models of character evolution . */
