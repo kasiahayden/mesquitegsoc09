@@ -57,9 +57,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 	
 	URIMap UriMap = null;
 	
-	PictureWindow pictureWindow;
-	String pathToPicture;
-	
 	GrappaPanel grappaPanel;
 	public DemoFrame  frame  = null;
 	
@@ -90,18 +87,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 				dotTool.setPopUpOwner(this);
 				setUseMenubar(false); //menu available by touching button
 			}
-					
-			
-			/*
-			resetContainingMenuBar();
-			resetAllWindowsMenus();
-			pictureWindow.setVisible(true);
-
-
-			setModuleWindow(pictureWindow);
-			resetContainingMenuBar();
-			resetAllWindowsMenus();
-			*/
 			
 		return true;
 	}
@@ -221,15 +206,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 						copyCellExplanation(cCurrent, tCurrent));
 			}
 		}
-		/*
-		 * pictureWindow = new Pic//getDotGraphElements();tureWindow(this);
-		 * setModuleWindow(pictureWindow); String pic =
-		 * "/home/kasia/Pictures/img_3148.jpg"; pictureWindow.setPath(pic);
-						
-		 * //pictureWindow.addToWindow(grappaPanel);
-		 * //pictureWindow.setCurrentObject(newGraph);
-		 */
-
 		else if (checker.compare(this.getClass(),
 				"Displays dot graph of NeXML annotations", "[name of module]",
 				commandName, "displayDotGraph")) {
@@ -237,12 +213,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String dotPath = null;
 			try {
 				dotPath = this.getProject().getHomeDirectoryName();
-				// logln("Path is: " + thisPath);
 				dotPath += "dot_temp.dot";
 				BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
-				//out.write("graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
-				//out.write("graph G {n0 [shape=ellipse, pos=\"240,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"0,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"80,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"160,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
-				//logln("Static graph is: graph G {n0 [shape=ellipse, pos=\"240,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"0,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"80,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"160,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}");
 				out.write(getDotGraphElements());
 				
 				getDotGraphElements();
@@ -250,25 +222,13 @@ public class NexmlViewer extends DataWindowAssistantI {
 			} catch (IOException e) {
 				logln("Problem writing dot file.");
 			}
-
-			// String dotFile =
-			// "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/dot_temp.dot";
-			// String dotFile =
-			// "/home/kasia/projects/zgrviewer/data/graphs/example.dot";
-			// String dotFile =
-			// "/home/kasia/projects/zgrviewer/data/graphs/ERTemp.dot";
-			// String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/cluster.dot";
-			// String dotFile = "/opt/jdk1.6.0_13/grappa/DEMO/ER.dot";
-			// String dotFile =
-			// "graph G {n0 [shape=ellipse, pos=\"536,112\", width=\"0.75\", height=\"0.50\"];n1 [shape=ellipse, pos=\"614,112\", width=\"0.92\", height=\"0.50\"]; n2 [shape=diamond, style=filled, color=lightgrey, pos=\"383,112\", width=\"0.89\", height=\"0.67\"];n3 [shape=diamond, style=filled, color=lightgrey, pos=\"462,112\", width=\"0.81\", height=\"0.67\"];n0 -- n1 -- n2 -- n3;}";
-
+			
 			Graph newGraph = null;
 			try {
 				FileInputStream input = new FileInputStream(dotPath);
 				Parser graphParser = new Parser(input, System.err);
 				graphParser.parse();
 				newGraph = graphParser.getGraph();
-				// logln("Grappa working ----------------");
 			} catch (Exception e) {
 				logln("Grappa failed.");
 			}
@@ -278,12 +238,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 		} else{
 			return super.doCommand(commandName, arguments, checker);
 		}
-		/* Kasia: Need command for displaying annotations
-		pictureWindow = new PictureWindow(this);
-		setModuleWindow(pictureWindow);
-		String pic = "/home/kasia/Pictures/img_3148.jpg";
-		pictureWindow.setPath(pic);
-		*/
+
 		return null;
 	}
 	/*.................................................................................................................*/
@@ -427,7 +382,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String taxonNode = rowName;
 			
 			int nodeCount = 0;
-			//boolean descriptionPresent = false;
 			
 			if (bearerTemp != null){
 				++nodeCount;		
@@ -462,7 +416,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 			
 			logln("nodeCount = " + nodeCount);
 			
-			
 			if (nodeHM.size() == nodeCount){
 				logln("nodeHM == nodeCount ---------");
 			}
@@ -470,7 +423,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 				logln("nodeHM != nodeCount");
 				logln("nodeHM.size = " + nodeHM.size() + "and nodeCount = " + nodeCount);
 			}
-			///*
+			
 			if (nodeHM.size() != 0){
 				double xFromLeft = 0.0;
 				double yFromBottom = 0.0;
@@ -485,65 +438,15 @@ public class NexmlViewer extends DataWindowAssistantI {
 				width = (taxonNode.length() * (.125));
 				logln("width: " + width + " for " + taxonNode + "\nxFromLeft: " + xFromLeft);
 				yFromBottom += nodeCount * nodeInterval;
-				graph += "\"" + taxonNode + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
-				//xFromLeft = (width/2.0) * 20;		
+				graph += "\"" + taxonNode + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";	
 				
 				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
 					String nodeKey = "" + nodeNum;
 					width = (nodeHM.get(nodeKey).length() * (.125));
 					logln("width: " + width + " for " + nodeHM.get(nodeKey) + "\nxFromLeft: " + xFromLeft);
 					yFromBottom -= nodeInterval;
-					//xFromLeft += (taxonNode.length() * (.125) * 50.0);
-					//xFromLeft += (width/2.0) * 20;
 					graph += "n" + nodeNum + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\" " + "label=\"" + nodeHM.get(nodeKey) + "\"]; ";
-					//xFromLeft += (width/2.0) * 20;
 				}
-				/*
-				
-				
-				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
-					String nodeKey = "" + nodeNum;
-					double labelLength = nodeHM.get(nodeKey).length();
-					width = (labelLength * (.125));
-					logln("width: " + width + " for " + nodeHM.get(nodeKey));
-					if (nodeNum > 1){
-						xFromLeft += (width/2);
-					}
-					graph += "\"" + nodeHM.get(nodeKey) + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\"]; ";
-					xFromLeft += (80 + (width/2));
-				}
-				*/
-				
-				/*
-				//Root node
-				yFromBottom = 112;
-				xFromLeft = (xFromLeft - 80)/2; //centering
-				graph += "\"" + taxonNode + "\"" + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\"," + "label=\"" + taxonNode + "\"]; ";
-				*/
-				
-				
-				
-				/*
-				//Link nodes
-				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
-					String nodeKey = "" + nodeNum;
-					String nodeName = "\"" + nodeHM.get(nodeKey) + "\"";
-					graph += "\"" + taxonNode + "\"" + " -- " + "n" + nodeNum + "[headclip=true];";	// tailclip=false];";
-				}
-				graph += "}";
-				*/
-				
-				/*
-				//Link nodes
-				for (int nodeNum = 1; nodeNum <= nodeCount; nodeNum++){
-					String nodeKey = "" + nodeNum;
-					String nodeName = "\"" + nodeHM.get(nodeKey) + "\"";
-					graph += "\"" + taxonNode + "\"" + " -- " + nodeName + ";";
-				}
-				graph += "}";
-				
-				
-				*/
 				
 				//Link nodes
 				double lineTop = nodeCount * nodeInterval;
@@ -562,18 +465,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 				
 			}
 			
-			//[pos="551,188 565,171 587,145 600,129"];
-			
 			logln("Generated graph from most recent click is:\n" + graph);
 			
-			
-			/*
-			 * Generated graph from most recent click is:
-graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [shape=ellipse, pos="80.0,112.0", width="0.92", height="0.5"]; n2 -- n2 -- ;}
-			 */
-			
-					
-			//*/
 		}
 		return graph;
 		
@@ -618,85 +511,11 @@ graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [sh
 		}
 		return s;
 	}
-	
-	/* ======================================================================== */
-	public class PictureWindow extends MesquiteWindow implements Commandable  {
-		String path;
-		Image image;
-		ImagePanel imagePanel;
-		MediaTracker mt = null;
-			boolean errored = true;
-			int count =0;
-		
-		public PictureWindow (NexmlViewer nexmlViewer){
-			super(nexmlViewer, true); //infobar
-	      		setWindowSize(64,64);
-	      		setMinimalMenus(true);
-			//getGraphicsArea().setLayout(new BorderLayout());
-			addToWindow(imagePanel = new ImagePanel(this));
-			//addToWindow("ghlgj");
-			imagePanel.setSize(64, 64);
-			setLocation(0,0);
-			imagePanel.setVisible(true);
-			resetTitle();
-	      		setWindowSize(64,64);
-		}
-		/*.................................................................................................................*/
-		/** When called the window will determine its own title.  MesquiteWindows need
-		to be self-titling so that when things change (names of files, tree blocks, etc.)
-		they can reset their titles properly*/
-		public void resetTitle(){
-			setTitle("Picture: " + path); //TODO: what tree?
-		}
-		public void checkSize(){
-			
-		}
-		public boolean setPath(String path){
-			this.path = path;
-			image = MesquiteImage.getImage(path);
-			if (MesquiteImage.waitForImageToLoad(image, this.getOuterContentsArea())){
-				imagePanel.setImage(image);
-				imagePanel.repaint();
-				setResizable(true);
-		      	if (image!=null) {
-		      		setWindowSize(image.getWidth(imagePanel),image.getHeight(imagePanel));
-		      		imagePanel.setSize(image.getWidth(imagePanel),image.getHeight(imagePanel));
-		      	}
-				setResizable(false);
-				resetTitle();
-				return true;
-			}
-			return false;
-		}
-	}
-	/* ======================================================================== */
-	/** The Panel containing the Mesquite logo on the startup window */
-	class ImagePanel extends Panel {
-		Image pic;
-		PictureWindow pw;
-		public ImagePanel (PictureWindow pw) {
-			setBackground(Color.white);
-			this.pw = pw;
-		}
-		/*.................................................................................................................*/
-		public void paint(Graphics g) {
-		   	if (MesquiteWindow.checkDoomed(this))
-		   		return;
-				g.drawImage(pic,0,0,(ImageObserver)this);
-			MesquiteWindow.uncheckDoomed(this);
-		}
-		public void setImage(Image i){
-			pic = i;
-		}
-	
-	}
-	
 	/* ======================================================================== */
 	
 	void doDemo(InputStream input) {
 		Parser program = new Parser(input, System.err);
 		try {
-			// program.debug_parse(4);
 			program.parse();
 		} catch (Exception ex) {
 			System.err.println("Exception: " + ex.getMessage());
@@ -704,33 +523,13 @@ graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [sh
 			System.exit(1);
 		}
 		Graph graph = null;
-
 		graph = program.getGraph();
-
-		System.err.println("The graph contains "
-				+ graph.countOfElements(Grappa.NODE | Grappa.EDGE
-						| Grappa.SUBGRAPH) + " elements.");
-
 		graph.setEditable(true);
-		// graph.setMenuable(true);
-		//graph.setErrorWriter(new PrintWriter(System.err, true));
-		// graph.printGraph(new PrintWriter(System.out));
-
-		System.err.println("bbox="
-				+ graph.getBoundingBox().getBounds().toString());
-
 		frame = new DemoFrame(graph);
-
-		//frame.show();
 	}
-	class DemoFrame extends JFrame implements ActionListener {
+	class DemoFrame extends JFrame{
 		GrappaPanel gp;
 		Graph graph = null;
-
-		JButton layout = null;
-		JButton printer = null;
-		JButton draw = null;
-		JButton quit = null;
 		JPanel panel = null;
 
 		public DemoFrame(Graph graph) {
@@ -745,18 +544,14 @@ graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [sh
 					Window w = wev.getWindow();
 					w.setVisible(false);
 					w.dispose();
-					System.exit(0);
 				}
 			});
 
 			JScrollPane jsp = new JScrollPane();
-			//jsp.getViewport().setBackingStoreEnabled(true);
 
 			gp = new GrappaPanel(graph);
 			gp.addGrappaListener(new GrappaAdapter());
-			gp.setScaleToFit(true);//Kasia originally false
-
-			java.awt.Rectangle bbox = graph.getBoundingBox().getBounds();
+			gp.setScaleToFit(true);
 
 			GridBagLayout gbl = new GridBagLayout();
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -768,103 +563,12 @@ graph G {n2 [shape=ellipse, pos="0.0,112.0", width="0.92", height="0.5"]; n2 [sh
 			panel = new JPanel();
 			panel.setLayout(gbl);
 
-			draw = new JButton("Draw");
-			gbl.setConstraints(draw, gbc);
-			panel.add(draw);
-			draw.addActionListener(this);
-
-			layout = new JButton("Layout");
-			gbl.setConstraints(layout, gbc);
-			panel.add(layout);
-			layout.addActionListener(this);
-
-			printer = new JButton("Print");
-			gbl.setConstraints(printer, gbc);
-			panel.add(printer);
-			printer.addActionListener(this);
-
-			quit = new JButton("Quit");
-			gbl.setConstraints(quit, gbc);
-			panel.add(quit);
-			quit.addActionListener(this);
-
 			getContentPane().add("Center", jsp);
 			getContentPane().add("West", panel);
 
 			setVisible(true);
 			jsp.setViewportView(gp);
 		}
-
-		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() instanceof JButton) {
-				JButton tgt = (JButton) e.getSource();
-				if (tgt == draw) {
-					graph.repaint();
-				} else if (tgt == quit) {
-					System.exit(0);
-				} else if (tgt == printer) {
-					graph.printGraph(System.out);
-					System.out.flush();
-				} else if (tgt == layout) {
-					Object connector = null;
-					try {
-						connector = Runtime.getRuntime().exec("/opt/jdk1.6.0_13/grappa/DEMO/formatDemo");
-					} catch (Exception ex) {
-						System.err
-								.println("Exception while setting up Process: "
-										+ ex.getMessage()
-										+ "\nTrying URLConnection...");
-						connector = null;
-					}
-					if (connector == null) {
-						try {
-							connector = (new URL(
-									"http://www.research.att.com/~john/cgi-bin/format-graph"))
-									.openConnection();
-							URLConnection urlConn = (URLConnection) connector;
-							urlConn.setDoInput(true);
-							urlConn.setDoOutput(true);
-							urlConn.setUseCaches(false);
-							urlConn.setRequestProperty("Content-Type",
-									"application/x-www-form-urlencoded");
-						} catch (Exception ex) {
-							System.err
-									.println("Exception while setting up URLConnection: "
-											+ ex.getMessage()
-											+ "\nLayout not performed.");
-							connector = null;
-						}
-					}
-					if (connector != null) {
-						if (!GrappaSupport.filterGraph(graph, connector)) {
-							System.err
-									.println("ERROR: somewhere in filterGraph");
-						}
-						if (connector instanceof Process) {
-							try {
-								int code = ((Process) connector).waitFor();
-								if (code != 0) {
-									System.err
-											.println("WARNING: proc exit code is: "
-													+ code);
-								}
-							} catch (InterruptedException ex) {
-								System.err
-										.println("Exception while closing down proc: "
-												+ ex.getMessage());
-								ex.printStackTrace(System.err);
-							}
-						}
-						connector = null;
-					}
-					graph.repaint();
-				}
-			}
-		}
-
-
 	}
-	
-   
 }
 
