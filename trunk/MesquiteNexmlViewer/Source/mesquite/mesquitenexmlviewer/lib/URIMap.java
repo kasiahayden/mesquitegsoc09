@@ -24,10 +24,12 @@ import mesquite.lib.MesquiteMessage;
 import mesquite.lib.MesquiteModule;
 import mesquite.lib.MesquiteThread;
 
+/** 
+ * URIMap is where all of the URIs are stored after being fetched from online obo files. 
+ * @author Kasia Hayden
+ * @version 2009-08-15
+ * */
 
-
-/** A class that contains information regarding submodels of stochastic models of character evolution . */
-/* ======================================================================== */
 public class URIMap extends FileElement {
 	public org.w3c.dom.Document domDoc = null;
 	public static Map<String, String> URIMap = new HashMap<String, String>();
@@ -41,6 +43,7 @@ public class URIMap extends FileElement {
 		this.domDoc = domDoc;
 	}
 	/*.................................................................................................................*/
+	/** Populates the hashmap of otu elements.*/
 	public void FillOtuHM(){
 		List<Element> otusElements = getChildrenByTagName(domDoc.getDocumentElement(), "otus"); //otus is the tag name
 		for (Element thisElement : otusElements) {//each otus in the tree (there's one)
@@ -54,6 +57,7 @@ public class URIMap extends FileElement {
 		}
 	}
 	/*.................................................................................................................*/		
+	/** Populates the hashmap of characters elements.*/
 	public void FillCharHM(){
 		List<Element> charactersElements = getChildrenByTagName(domDoc.getDocumentElement(), "characters"); //characters is the tag name
 		for (Element thisElement : charactersElements) {//each characters element in the tree (there's one)
@@ -69,6 +73,7 @@ public class URIMap extends FileElement {
 		}
 	}
 	/*.................................................................................................................*/
+	/** Populates the hashmap of state elements, which fill the URIMap hashmap.*/
 	public void FillStateHM(){
 		String stateId = null;
 		String descriptionLabel = null;
@@ -166,6 +171,9 @@ public class URIMap extends FileElement {
 		fillOntIds();
 	}
 	/*.................................................................................................................*/
+	/** Connects to Sourceforge and pulls specific obo files.
+	 *@see fillOntIds(String path) 
+	 **/
 	public void fillOntIds(){
 		String taoPath = "http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/anatomy/gross_anatomy/animal_gross_anatomy/fish/teleost_anatomy.obo";
 		String ttoPath = "http://obo.cvs.sourceforge.net/*checkout*/obo/obo/ontology/taxonomy/teleost_taxonomy.obo";
@@ -185,6 +193,10 @@ public class URIMap extends FileElement {
 		fillOntIds(patoPath);
 	}
 	/*.................................................................................................................*/
+	/** Takes path to obo files on Sourceforge and parses for ids and labels of URIs.
+	 *@param Path to an obo file on Sourceforge 
+	 *@see fillOntIds()
+	 **/
 	public void fillOntIds(String path){
 		Pattern idPattern = Pattern.compile("^id:");
 		Pattern namePattern = Pattern.compile("^name:");
@@ -196,8 +208,6 @@ public class URIMap extends FileElement {
 		StringBuffer sBb= new StringBuffer(100);
 		StringBuffer s= new StringBuffer(100);
 		MesquiteInteger remnant = new MesquiteInteger(-1);
-		//String firstFour = path.substring(0,4);
-		//boolean isHTTP = firstFour.equalsIgnoreCase("HTTP");
 		URL url = null;
 		try {
 			url = new URL(path);
@@ -215,34 +225,22 @@ public class URIMap extends FileElement {
 				if (newS!=null) {
 					matcher = idPattern.matcher(newS);
 					if (matcher.find() == true){
-						//logln("id: is found");
 						idMatch = newS;
 						int startStr = "id:".length();
 						idMatch = idMatch.substring(startStr, idMatch.length()).trim();
-						//logln("id: " + idMatch);
 					}
-					/*
-					
-					*/
-					
 					matcher = namePattern.matcher(newS);
 					if (matcher.find() == true){
-						//logln("name: is found");
 						 nameMatch = newS;
 						int startStr = "name:".length();
 						nameMatch = nameMatch.substring(startStr, nameMatch.length()).trim();
-						//logln("name: " + nameMatch);
 					}
 					
 					if ((idMatch!=null && idMatch.length()!=0 && idMatch.trim().length()!=0) && (nameMatch!=null && nameMatch.length()!=0 && nameMatch.trim().length()!=0)){
 						if (startsWithURI(idMatch) == true){
 							if (URIMap.containsKey(idMatch)){
-								//logln("TRUE- URIMap contains this id");
 								URIMap.put(idMatch, nameMatch);
-								//logln("URIMap.put(" + idMatch + ", " + nameMatch + ")");
 							}
-							//logln("id: " + idMatch);
-							//logln("name: " + nameMatch);
 						}
 						else {
 							idMatch = null;
@@ -257,6 +255,11 @@ public class URIMap extends FileElement {
 		}
 	}
 	/*.................................................................................................................*/
+	/** Helper method for parsing obo files from Sourceforge, 
+	 * looks for lines beginning with the types of URIs we are looking for.
+	 *@param Line of input parsed from obo file pulled from Sourceforge 
+	 *fillOntIds(String path)
+	 **/
 	public boolean startsWithURI(String input){
 		Pattern TAOPattern = Pattern.compile("^TAO");
 		Pattern PATOPattern = Pattern.compile("^PATO");
@@ -269,17 +272,14 @@ public class URIMap extends FileElement {
 		matcher = TAOPattern.matcher(input);
 		if (matcher.find() == true){
 			taoBool = true;
-			//logln("id from startsWithURI(1): " + input);
 		}
 		matcher = PATOPattern.matcher(input);
 		if (matcher.find() == true){
 			patoBool = true;
-			//logln("id from startsWithURI(2): " + input);
 		}
 		matcher = BSPOPattern.matcher(input);
 		if (matcher.find() == true){
 			bspoBool = true;
-			//logln("id from startsWithURI(3): " + input);
 		}
 		
 		if (taoBool == true || patoBool == true || bspoBool == true){
