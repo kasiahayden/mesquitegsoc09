@@ -46,3 +46,5 @@ If you are not able to find this is the log you can still try the next step.
 You can view any cell's annotations by clicking on the Phenex button in the toolbar and selecting a cell. (Run your cursor over the tools to see a tool description in the annotations panel. The Phenex button's description is something like "Displays Phenex-generated NeXML annotations".) Annotations will show in the footnotes box directly beneath the matrix.
 
 You can view a Graphviz-generated dot graph of a cell's annotations by clicking on the Graphviz button in the toolbar and selecting a cell. (The Graphviz button's description is "Displays dot graph of NeXML annotations.") The dot graph will appear in a separate pop-up window. You can zoom in or out of the graph by right-clicking on the graph (or Control-click for Mac users). 
+
+See screenshots that highlight the Phenex button and the Graphviz button in the screenshots folder in this same (Installation) directory.
