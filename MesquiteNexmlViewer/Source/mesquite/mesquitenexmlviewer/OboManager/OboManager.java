@@ -18,6 +18,12 @@ import mesquite.mesquitenexmlviewer.lib.*;
 
 import mesquite.nexml.InterpretNEXML.*;
 
+/** 
+ * OboManager fetches URIs from obo files online and stores them in hashmaps in URIMap. 
+ * @author Kasia Hayden
+ * @version 2009-08-15
+ **/
+
 public class OboManager extends FileInit {
 	public org.w3c.dom.Document domDoc = null;
 	public URIMap uriMap;
@@ -50,13 +56,13 @@ public class OboManager extends FileInit {
 	/*.................................................................................................................*/
 	/**
 	 * A method called immediately after the file has been read in or completely
-	 * set up (if a new file).
+	 * set up (if a new file). In OboManager calls the methods in URIMap to connect to the obo files online and 
+	 * pull down the URIs that will populate the hashmaps in URIMap. 
 	 */
 	public void fileReadIn(MesquiteFile f) {
 		if (f == null || f.getProject() == null)
 			return;
 
-		//properties = new Properties();
 		properties = ObjectConverter.getPredicateHandlerMapping();
 		String path = (String)(properties.get("path"));
 		
@@ -75,13 +81,6 @@ public class OboManager extends FileInit {
 			uriMap.addToFile( f, getProject(), findElementManager(URIMap.class));
 			getProject().addFileElement(uriMap);
 		}
-
-		/*
-		//Temporary- to get it to skip everything below
-		if (f.getPath() != "/home/kasia/workspace/Mesquite Project/Mesquite_Folder/Vari_new.xml.nex"){
-			return;
-		}
-		*/
 
 		uriMap.FillOtuHM();
 		uriMap.FillCharHM();
@@ -102,7 +101,7 @@ public class OboManager extends FileInit {
 				for (Element rowElement : rowElements) { //for each row in the list of rows
 					tempRowName = rowElement.getAttribute("otu").trim();
 					tempRowName = uriMap.otuHM.get(tempRowName);
-					//***:Later on should create method to go back and make entries for the otu rows that weren't called
+					//Later can create method to go back and make entries for the otu rows that weren't called
 					List<Element> cellElements = getChildrenByTagName(rowElement, "cell");
 					for (Element cellElement : cellElements){ //for cell in the list of cells 
 						tempCharName = cellElement.getAttribute("char").trim();
@@ -114,20 +113,7 @@ public class OboManager extends FileInit {
 						keyCoord.add(tempRowName);
 						
 						Map<String, String> valCell = uriMap.stateHM.get(tempStateId);
-                       
-						/*
-						String bTest = valCell.get("bearer");
-                        String hTest = valCell.get("holds");
-                        String qTest = valCell.get("quality");
-                        String rTest = valCell.get("related");
-                        //logln("Result of calling masterMap: Bearer: " + bTest + " Quality: " + qTest);
-
-                                        if (hTest!= null || rTest!=null){
-                                                logln("Column: " + tempCharName + " Row: " + tempRowName);
-                                                logln("Bearer: " + bTest + "  Holds in Relation to: " + hTest + "  Quality: " + qTest + "  Related Entity: " + rTest);
-                                        }
-	    		    	*/
-                                        
+                                   
 	    		    	uriMap.masterMap.put(keyCoord, valCell);
 						
 						tempCharName = null;
