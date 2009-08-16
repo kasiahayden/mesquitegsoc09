@@ -28,6 +28,9 @@ C:\Program Files\Mesquite_Folder\mesquite\mesquitenexmlviewer
 As you can see, "nexml" and "mesquitenexmlviewer" should be in the same folder, that is the "mesquite" folder.
 
 
+3c) Inside the "Mesquite_Folder" folder, you should see a folder named "jars". In this "jars" folder, put the file named "grappa1_2".
+
+
 4) Run Mesquite and check to see that the modules loaded. On the startup screen you should be able to scroll through the text and see output that will tell you the modules were successfully loaded. 
 
 It will look something like:
