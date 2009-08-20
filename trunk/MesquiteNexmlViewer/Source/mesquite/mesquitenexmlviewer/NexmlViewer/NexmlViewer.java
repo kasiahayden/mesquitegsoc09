@@ -65,8 +65,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 				nexmlTool.setWorksOnColumnNames(true);
 				nexmlTool.setWorksOnRowNames(true);
 				((MesquiteWindow)containerOfModule()).addTool(nexmlTool);
-				nexmlTool.setPopUpOwner(this);
-				setUseMenubar(false); //menu available by touching button
 			}
 			
 			addMenuItem("Display dot graph", MesquiteModule.makeCommand(
@@ -76,8 +74,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 				dotTool.setWorksOnColumnNames(true);
 				dotTool.setWorksOnRowNames(true);
 				((MesquiteWindow)containerOfModule()).addTool(dotTool);
-				dotTool.setPopUpOwner(this);
-				setUseMenubar(false); //menu available by touching button
 			}
 			
 		return true;
