@@ -44,7 +44,7 @@ Additional modules loaded from [Your path to Mesquite_Folder]
 If you are not able to find this is the log you can still try the next step.
 
 
-5) Open a NeXML file in Mesquite. A pop-up box will appear and Mesquite will give you the option to choose your interpreter. Scroll down until you see NeXML and select it. The matrix file should automatically open.
+5) Open a NeXML file in Mesquite. A pop-up box will appear and Mesquite will give you the option to choose your interpreter. Scroll down until you see NeXML and select it. Immediately after this Mesquite will prompt you to save the imported file in its new format. Mesquite requires you to save it before you can view it, so save the file in the location of your choice. After you save, the matrix file should automatically open.
 
 You can view any cell's annotations by clicking on the Phenex button in the toolbar and selecting a cell. (Run your cursor over the tools to see a tool description in the annotations panel. The Phenex button's description is something like "Displays Phenex-generated NeXML annotations".) Annotations will show in the footnotes box directly beneath the matrix.
 
