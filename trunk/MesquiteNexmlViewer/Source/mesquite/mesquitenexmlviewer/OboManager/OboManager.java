@@ -87,7 +87,6 @@ public class OboManager extends FileInit {
 		logln("\nLoading ontologies...\n");
 		uriMap.FillStateHM();
 		
-		
 		String tempCharName = null;
 		String tempRowName = null;
 		String tempStateId = null;

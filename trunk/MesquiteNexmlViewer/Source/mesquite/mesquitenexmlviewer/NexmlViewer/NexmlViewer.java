@@ -3,15 +3,17 @@ package mesquite.mesquitenexmlviewer.NexmlViewer;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,7 +53,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 	URIMap UriMap = null;
 	
 	GrappaPanel grappaPanel;
-	public DemoFrame  frame  = null;
+	public DemoFrame frame  = null;
+	public String graphTitle = null;
 	
 	public Map<String, String> nodeHM = new HashMap<String, String>();
 	
@@ -62,8 +65,6 @@ public class NexmlViewer extends DataWindowAssistantI {
 					"displayNeXML", this));
 			if (containerOfModule() instanceof MesquiteWindow) {
 				nexmlTool = new TableTool(this, "DisplayNeXML", getPath(), "nexml.gif", 1,1,"Displays Phenex-generated NeXML annotations", "Displays Phenex-generated NeXML annotations in the footnote box.", MesquiteModule.makeCommand("displayNeXML", this), null, null);
-				nexmlTool.setWorksOnColumnNames(true);
-				nexmlTool.setWorksOnRowNames(true);
 				((MesquiteWindow)containerOfModule()).addTool(nexmlTool);
 			}
 			
@@ -71,8 +72,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 					"displayDotGraph", this));
 			if (containerOfModule() instanceof MesquiteWindow) {
 				dotTool = new TableTool(this, "displayDotGraph", getPath(), "dot.gif", 1,1,"Displays dot graph of NeXML annotations", "Displays dot graphs of Phenex-generated NeXML annotations.", MesquiteModule.makeCommand("displayDotGraph", this), null, null);
-				dotTool.setWorksOnColumnNames(true);
-				dotTool.setWorksOnRowNames(true);
+				dotTool.setWorksBeyondLastColumn(true);
+				dotTool.setWorksBeyondLastRow(true);
 				((MesquiteWindow)containerOfModule()).addTool(dotTool);
 			}
 			
@@ -113,7 +114,7 @@ public class NexmlViewer extends DataWindowAssistantI {
 	}
 	/*.................................................................................................................*/
 	public String copyCellExplanation(int cCurrent, int tCurrent) {
-		String s = "Kasia:BasicDataWindowMaker [";
+		String s = "BasicDataWindowMaker [";
 		if (tCurrent >= 0 && tCurrent < data.getNumTaxa())
 			s += "t." + (tCurrent + 1);
 		if (cCurrent >= 0 && cCurrent < data.getNumChars())
@@ -166,6 +167,19 @@ public class NexmlViewer extends DataWindowAssistantI {
 	public void focusInCell(int ic, int it) {
 		cCurrent = ic; // column
 		tCurrent = it; // row
+		/*
+		logln("ic: " + ic + "  it: " + it);
+		if (ic == -2 && it == -2){
+			logln("Outside of the matrix.");
+		}
+		if (ic == 0 && it == 0){
+			logln("First cell.");
+		}
+		if (ic == -1 && it == -1){
+			logln("Above and beyond the matrix.");
+			
+		}
+		*/
 	}
 	/*.................................................................................................................*/
 	/** returns whether this module is requesting to appear as a primary choice */
@@ -200,9 +214,11 @@ public class NexmlViewer extends DataWindowAssistantI {
 				dotPath = this.getProject().getHomeDirectoryName();
 				dotPath += "dot_temp.dot";
 				BufferedWriter out = new BufferedWriter(new FileWriter(dotPath));
-				out.write(getDotGraphElements());
-				
-				getDotGraphElements();
+				String dotGraph = getDotGraphElements();
+				if (dotGraph == null || dotGraph.length() == 0){
+					return null;
+				}
+				out.write(dotGraph);
 				out.close();
 			} catch (IOException e) {
 				logln("Problem writing dot file.");
@@ -218,9 +234,15 @@ public class NexmlViewer extends DataWindowAssistantI {
 				logln("Grappa failed.");
 			}
 			
-			String columnName = table.getColumnNameText(cCurrent);
-			String rowName = table.getRowNameText(tCurrent);
-			String graphTitle = rowName.trim() + "  |  " + columnName.trim();
+			String columnName = table.getColumnNameText(cCurrent).trim();
+			String rowName = table.getRowNameText(tCurrent).trim();
+			
+			if (columnName == null || columnName.length() == 0){
+				columnName = " ";
+			}
+			if (graphTitle == null){
+				graphTitle = rowName + "  |  " + columnName;
+			}
 			frame = new DemoFrame(newGraph, graphTitle);
 
 		} else{
@@ -238,14 +260,19 @@ public class NexmlViewer extends DataWindowAssistantI {
 				&& sAnnot.trim().length() != 0) {
 			sAnnot += "\n";
 		}
-		String columnName = table.getColumnNameText(cCurrent);
-		String rowName = table.getRowNameText(tCurrent);
+		String columnName = table.getColumnNameText(cCurrent).trim();
+		String rowName = table.getRowNameText(tCurrent).trim();
+		
 		sAnnot += "Taxon: " + rowName;
 		//sAnnot += "Column: " + columnName + "    Row: " + rowName + " ";
 
+		if (columnName == null || columnName.length() == 0){
+			columnName = " ";
+		}
+		
 		Collection<String> tempArray = new ArrayList<String>();
-		tempArray.add(columnName.trim());
-		tempArray.add(rowName.trim());
+		tempArray.add(columnName);
+		tempArray.add(rowName);
 
 		ListableVector vectors = data.getFile().getFileElements();
 		if (vectors !=null && vectors.size()>0) {
@@ -264,19 +291,29 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String qualityTemp = tempValHM.get("quality");
 			String relatedTemp = tempValHM.get("related");
 			String descriptionTemp = tempValHM.get("description"); //Doesn't need to be fished from URIMap.URIMap- is in masterMap
+
 			
 			if (URIMap.URIMap.containsKey(bearerTemp)) {
-				bearerTemp = URIMap.URIMap.get(bearerTemp);
+				if (URIMap.URIMap.get(bearerTemp) != null){
+					bearerTemp = URIMap.URIMap.get(bearerTemp);
+				}
 			}
 			if (URIMap.URIMap.containsKey(holdsTemp)) {
-				holdsTemp = URIMap.URIMap.get(holdsTemp);
+				if (URIMap.URIMap.get(holdsTemp) != null){
+					holdsTemp = URIMap.URIMap.get(holdsTemp);
+				}
 			}
 			if (URIMap.URIMap.containsKey(qualityTemp)) {
-				qualityTemp = URIMap.URIMap.get(qualityTemp);
+				if (URIMap.URIMap.get(qualityTemp) != null){
+					qualityTemp = URIMap.URIMap.get(qualityTemp);	
+				}
 			}
 			if (URIMap.URIMap.containsKey(relatedTemp)) {
-				relatedTemp = URIMap.URIMap.get(relatedTemp);
+				if (URIMap.URIMap.get(relatedTemp) != null){
+					relatedTemp = URIMap.URIMap.get(relatedTemp);
+				}
 			}
+			
 			
 			
 			if (holdsTemp == null && relatedTemp == null) {
@@ -329,12 +366,63 @@ public class NexmlViewer extends DataWindowAssistantI {
 	public String getDotGraphElements(){
 		String graph = null;
 		
-		String columnName = table.getColumnNameText(cCurrent);
-		String rowName = table.getRowNameText(tCurrent);
-	
+		String columnName = table.getColumnNameText(cCurrent).trim();
+		String rowName = table.getRowNameText(tCurrent).trim();
+		
+		if (columnName == null || columnName.length() == 0){
+			columnName = " ";
+		}
+		
+		if (cCurrent == -2 && tCurrent == -2){
+			//return "graph G { n3 [shape=ellipse, pos=\"0.0,0.0\", width=\"3.5\", height=\"0.5\" label=\"I am an alone little node.\"]; n4 [shape=ellipse, pos=\"0.0,100.0\", width=\"3.5\", height=\"0.5\" label=\"I am an alone little node.\"]; n5 [shape=plaintext, pos=\"0.0,50.0\", width=\"3.5\", height=\"0.5\" label=\"Faux label\"]; n3 -- n4 [label=\"Test\", fontcolor=green, pos=\"0,0 0,100\"]; }";
+			
+			graphTitle = "GSoC";
+			return "graph G {" +
+			"n1 [shape=box, color=violetred, pos=\"-95.0,450.0\", width=\"1.00\", height=\"0.45\" label=\"NESCent\"]; " +
+			"n2 [shape=box, color=violetred, pos=\"95.0,450.0\", width=\"0.80\", height=\"0.45\" label=\"Fedora\"]; " +
+			"n3 [shape=box, color=violetred, pos=\"-95.0,366.875\", width=\"1.50\", height=\"0.45\" label=\"Accept offer?\"]; " +
+			"l3 [shape=plaintext, pos=\"-45.0,313.5\", width=\"1.50\", height=\"0.45\" label=\"Yes\"]; " +
+			"n4 [shape=box, color=violetred, pos=\"95.0,366.875\", width=\"1.50\", height=\"0.45\" label=\"Accept offer?\"]; " +
+			"l4 [shape=plaintext, pos=\"177.5,376.875\", width=\"1.50\", height=\"0.45\" label=\"No\"]; " +
+			"n6 [shape=ellipse, color=violetred4, pos=\"275,366.875\", width=\"1.90\", height=\"0.45\" label=\"See you around!\"]; " +
+			"n7 [shape=circle, color=red1, pos=\"-106.06,256.06\", width=\"0.5\", height=\"0.5\" label=\"LH\"]; " +
+			"n8 [shape=circle, color=red1, pos=\"-150.0,150.0\", width=\"0.5\", height=\"0.5\" label=\"HL\"]; " +
+			"n9 [shape=circle, color=red1, pos=\"-106.06,43.94\", width=\"0.5\", height=\"0.5\" label=\"PM\"]; " +
+			"n10 [shape=circle, color=red1, pos=\"0.0,0.0\", width=\"0.7\", height=\"0.7\" label=\"KMH\"]; " +
+			"n11 [shape=circle, color=red1, pos=\"106.06,43.94\", width=\"0.5\", height=\"0.5\" label=\"RV\"]; " +
+			"n12 [shape=circle, color=red1, pos=\"150.0,150.0\", width=\"0.5\", height=\"0.5\" label=\"JB\"]; " +
+			"n13 [shape=circle, color=red1, pos=\"106.06,256.06\" width=\"0.5\", height=\"0.5\" label=\"EG\"]; " +
+			"n14 [shape=doublecircle, color=gold, pos=\"0.0,150.0\", width=\"2.40\", height=\"2.40\" label=\"MesquiteNexmlViewer\"]; " +
+					"n1 -- n3 [pos=\"-95.0,433.125 -95.0,383.75\"]; " +
+					"n2 -- n4 [pos=\"95.0,433.125 95.0,383.75\"]; " +
+					"n3 -- n14 [pos=\"-95.0,350.0 0.0,237.0\"]; " +
+					"n4 -- n6 [pos=\"151.25,366.875 203.75,366.875\"]; " +
+					"n7 -- n14 [pos=\"-61.52,211.52 -93.34,243.34\"]; " +
+					"n8 -- n14 [pos=\"-132.0,150.0 -87.0,150.0\"]; " + 
+					"n9 -- n14 [pos=\"-61.52,88.48 -93.0,56.0\"]; " +
+					"n10 -- n14 [pos=\"0.0,25.5 0.0,63.0\"]; " +
+					"n11 -- n14 [pos=\"61.52,88.48 93.0,56.0\"]; " +
+					"n12 -- n14 [pos=\"132.0,150.0 87.0,150.0\"]; " +
+					"n13 -- n14 [pos=\"61.52,211.52 93.34,243.34\"]; " + 
+					 "}";
+			
+		}
+		
+		if (cCurrent < 0 && tCurrent > 0){
+			logln("cCurrent < 0");
+			//return "graph G { n3 [shape=ellipse, pos=\"0.0,0.0\", width=\"3.5\", height=\"0.5\" label=\"I'm outside of the columns.\"]; }";
+			return null;
+		}
+		if (cCurrent > 0 && tCurrent < 0){
+			logln("tCurrent < 0");
+			//return "graph G { n3 [shape=ellipse, pos=\"0.0,0.0\", width=\"3.5\", height=\"0.5\" label=\"I'm outside of the rows.\"]; }";
+			return null;
+		}
+		
+		
 		Collection<String> tempArray = new ArrayList<String>();
-		tempArray.add(columnName.trim());
-		tempArray.add(rowName.trim());
+		tempArray.add(columnName);
+		tempArray.add(rowName);
 
 		ListableVector vectors = data.getFile().getFileElements();
 		if (vectors !=null && vectors.size()>0) {
@@ -352,8 +440,9 @@ public class NexmlViewer extends DataWindowAssistantI {
 			String holdsTemp = tempValHM.get("holds");
 			String qualityTemp = tempValHM.get("quality");
 			String relatedTemp = tempValHM.get("related");
-			String descriptionTemp = tempValHM.get("description");
-			
+			String descriptionTemp = tempValHM.get("description"); //Doesn't need to be fished from URIMap.URIMap- is in masterMap
+			String qualifierTemp = tempValHM.get("qualifier"); //Doesn't need to be fished from URIMap.URIMap- is in masterMap
+
 			if (URIMap.URIMap.containsKey(bearerTemp)) {
 				bearerTemp = URIMap.URIMap.get(bearerTemp);
 			}
@@ -396,8 +485,10 @@ public class NexmlViewer extends DataWindowAssistantI {
 				String intNodeCount = "" + nodeCount;
 				nodeHM.put(intNodeCount, descriptionTemp);
 			}
-			if (nodeHM.size() == nodeCount){
-			}
+			
+			double qualifierRelX = 0;
+			double qualifierRelY = 0;
+
 			if (nodeHM.size() != 0){
 				double xFromLeft = 0.0;
 				double yFromBottom = 0.0;
@@ -420,6 +511,8 @@ public class NexmlViewer extends DataWindowAssistantI {
 					graph += "n" + nodeNum + " [shape=" + shape + ", pos=\"" + xFromLeft + "," + yFromBottom + "\", width=\"" + width + "\", height=\"" + height + "\" " + "label=\"" + nodeHM.get(nodeKey) + "\"]; ";
 				}
 				
+				
+				
 				//Link nodes
 				double lineTop = nodeCount * nodeInterval;
 				double lineBottom = 0;
@@ -430,13 +523,44 @@ public class NexmlViewer extends DataWindowAssistantI {
 					lineBottom = lineTop - nodeInterval + (2 * halfNodeHeight);
 					graph += " -- ";
 					graph += "n" + nodeNum + " [pos=\"" + xFromLeft + "," + lineTop + " " + xFromLeft + "," + lineBottom + "\"]; ";
-					graph += "n" + nodeNum + " ";
+					
+					if (!((nodeNum + 1) > nodeCount)){
+						graph += "n" + nodeNum + " ";
+					}
+					
+					if (nodeNum == 2){
+						qualifierRelX = xFromLeft;
+						qualifierRelY = ((lineTop - lineBottom)/2) + lineBottom; 
+					}
+										
 					lineTop = lineBottom - halfNodeHeight;
 				}
-				graph += ";}";	
+				
+				
+				if (nodeCount >= 3){
+					int startQual = qualifierTemp.indexOf(":");
+					qualifierTemp = qualifierTemp.substring(startQual+1);
+					qualifierTemp = qualifierTemp.replaceAll("_", " ");
+					
+					width = (qualifierTemp.length() * (.125));
+					qualifierRelX += (width/2)*75 - 5;
+					
+					graph += "l1 [shape=plaintext, fontcolor=steelblue1, pos=\"" + qualifierRelX + "," + qualifierRelY + "\", width=\"" + width + "\", height=\"" + height + "\" " + "label=\"" + qualifierTemp + "\"]; ";
+				}
+				
+				/*
+				if (nodeCount >= 3){
+				width = (qualifierTemp.length() * (.125));
+				qualifierRelX += (width/2)*75 + 10;
+				graph += "l1 [shape=plaintext, pos=\"50,100\", width=\"" + width + "\", height=\"" + height + "\" " + "label=\"QR: " + qualifierTemp + "\"]; ";
+				}
+				*/
+				
+				graph += "}";	
 				
 			}
 		}
+		logln("Print graph: " + graph);
 		return graph;
 	}
 	
@@ -481,9 +605,15 @@ public class NexmlViewer extends DataWindowAssistantI {
 	}
 	/* ======================================================================== */
 	/** Class responsible for displaying Graphviz dot graph, through the Grappa Java graph drawing package.*/
-	class DemoFrame extends JFrame{
+	class DemoFrame extends JFrame implements ActionListener{
 		GrappaPanel gp;
 		Graph graph = null;
+		
+		JButton scale = null;
+		JButton inZoom = null;
+		JButton outZoom = null;
+        JButton draw = null;
+        //JButton printer = null; //Only prints to log, not printer.
 		JPanel panel = null;
 
 		public DemoFrame(Graph graph, String graphTitle) {
@@ -516,12 +646,66 @@ public class NexmlViewer extends DataWindowAssistantI {
 
 			panel = new JPanel();
 			panel.setLayout(gbl);
-
+			
+			scale = new JButton("Scale to Fit");
+            gbl.setConstraints(scale, gbc);
+            panel.add(scale);
+            scale.addActionListener(this);
+			
+			inZoom = new JButton("Zoom in");
+            gbl.setConstraints(inZoom, gbc);
+            panel.add(inZoom);
+            inZoom.addActionListener(this);
+            
+            outZoom = new JButton("Zoom out");
+            gbl.setConstraints(outZoom, gbc);
+            panel.add(outZoom);
+            outZoom.addActionListener(this);
+			
+			draw = new JButton("Redraw");
+            gbl.setConstraints(draw, gbc);
+            panel.add(draw);
+            draw.addActionListener(this); 
+            
+            /*
+			printer = new JButton("Print");
+            gbl.setConstraints(printer, gbc);
+            panel.add(printer);
+            printer.addActionListener(this);
+            */
+             
 			getContentPane().add("Center", jsp);
 			getContentPane().add("West", panel);
 
 			setVisible(true);
 			jsp.setViewportView(gp);
+		}
+		
+		public void actionPerformed(ActionEvent e) {
+            if (e.getSource() instanceof JButton) {
+                    JButton tgt = (JButton) e.getSource();
+                    if (tgt == draw) {
+                        gp.repaint();
+                    } else if (tgt == scale) {
+                    	gp.setScaleToFit(true);
+            			gp.repaint();
+                    } else if (tgt == inZoom) {
+                    	gp.setScaleToFit(false);
+            			gp.setScaleToSize(null);
+            			gp.multiplyScaleFactor(1.25);
+            			gp.clearOutline();
+            			gp.repaint();
+                    } else if (tgt == outZoom) {
+                    	gp.setScaleToFit(false);
+            			gp.setScaleToSize(null);
+            			gp.multiplyScaleFactor(0.8);
+            			gp.clearOutline();
+            			gp.repaint();
+                    } /*else if (tgt == printer) {
+                            graph.printGraph(System.out);
+                            System.out.flush();
+                    } */
+            }
 		}
 	}
 }
