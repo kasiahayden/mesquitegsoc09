@@ -37,6 +37,7 @@ public class URIMap extends FileElement {
 	public Map<String, String> otuHM = new HashMap<String, String>();
 	public Map<String, String> charHM = new HashMap<String, String>();
 	public Map<String, Map<String, String>> stateHM = new HashMap<String, Map<String, String>>();
+	public boolean internetFail = false;
 	
 	/*.................................................................................................................*/
 	public URIMap(org.w3c.dom.Document domDoc){
@@ -81,6 +82,7 @@ public class URIMap extends FileElement {
 		String holdsTyperef = null;
 		String qualityTyperef = null;
 		String relatedETyperef = null;
+		String qualifierRelLabel = null;
 		List<Element> charactersElements = getChildrenByTagName(domDoc.getDocumentElement(), "characters"); //characters is the tag name
 		for (Element thisElement : charactersElements) {//each characters element in the tree (there's one)
 			List<Element> formatElements = getChildrenByTagName(thisElement, "format");
@@ -109,6 +111,7 @@ public class URIMap extends FileElement {
 											List<Element> qualifierTag = getChildrenByTagName(bearTyperefEl, "qualifier");
 											if (qualifierTag!=null){
 												for (Element qualifierTagElement : qualifierTag){
+													qualifierRelLabel = qualifierTagElement.getAttribute("relation").trim();
 													List<Element> holdsIRT = getChildrenByTagName(qualifierTagElement, "holds_in_relation_to");
 													for (Element holdsIRTElement : holdsIRT){//only one
 														List<Element> holdsTyperefElement = getChildrenByTagName(holdsIRTElement, "typeref");
@@ -150,12 +153,19 @@ public class URIMap extends FileElement {
 							}
 						}
 						
+						/*
+						int startQual = qualifierRelLabel.indexOf(":");
+						qualifierRelLabel = qualifierRelLabel.substring(startQual);
+						qualifierRelLabel = qualifierRelLabel.replaceAll("_", " ");
+						*/
+						
 						Map<String, String> values = new HashMap<String, String>();
 						values.put("bearer", bearerTyperef);
 						values.put("holds", holdsTyperef);
 						values.put("quality", qualityTyperef);
 						values.put("related", relatedETyperef);
 						values.put("description", descriptionLabel);
+						values.put("qualifier", qualifierRelLabel);
 						
 						stateHM.put(stateId, values);
 
@@ -191,6 +201,10 @@ public class URIMap extends FileElement {
 		
 		//logln("Loading PATO ontology...");
 		fillOntIds(patoPath);
+		
+		if (internetFail == true){
+			MesquiteModule.mesquiteTrunk.discreetAlert( MesquiteThread.isScripting()," Mesquite could not connect to the internt and will default to displaying numeric URIs instead of text annotations.");
+		}	
 	}
 	/*.................................................................................................................*/
 	/** Takes path to obo files on Sourceforge and parses for ids and labels of URIs.
@@ -208,7 +222,7 @@ public class URIMap extends FileElement {
 		StringBuffer sBb= new StringBuffer(100);
 		StringBuffer s= new StringBuffer(100);
 		MesquiteInteger remnant = new MesquiteInteger(-1);
-		URL url = null;
+		URL url = null; 
 		try {
 			url = new URL(path);
 		}
@@ -252,7 +266,8 @@ public class URIMap extends FileElement {
 		}
 		catch( IOException e ) {
 			MesquiteMessage.warnProgrammer("IO Exception found (6a) : " + path + "   " + e.getMessage());
-		}
+			internetFail = true; 
+		}	
 	}
 	/*.................................................................................................................*/
 	/** Helper method for parsing obo files from Sourceforge, 
